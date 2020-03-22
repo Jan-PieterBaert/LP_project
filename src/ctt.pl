@@ -14,16 +14,16 @@
 
 %%% Implementation
 % main datastructure: [Size:[Horizontal, Vertical], Turn, Orientation:[Horizontal, Vertical], State, Tiles:[List of all tiles]]
-new_data([[0,0],"",[0,0],"",[]]).
+new_data([0/0,"",0/0,"",[]]).
 
-get_size(Data,Horizontal,Vertical) :- nth0(0,Data,[Horizontal,Vertical]).
-set_size(Data,Horizontal,Vertical,NewData) :- replace(Data,0,[Horizontal,Vertical],NewData).
+get_size(Data,Horizontal,Vertical) :- nth0(0,Data,Horizontal/Vertical).
+set_size(Data,Horizontal,Vertical,NewData) :- replace(Data,0,Horizontal/Vertical,NewData).
 
 get_turn(Data,Turn) :- nth0(1,Data,Turn).
 set_turn(Data,Turn,NewData) :- replace(Data,1,Turn,NewData).
 
-get_orientation(Data,Horizontal,Vertical) :- nth0(2,Data,[Horizontal,Vertical]).
-set_orientation(Data,Horizontal,Vertical,NewData) :- replace(Data,2,[Horizontal,Vertical],NewData).
+get_orientation(Data,Horizontal,Vertical) :- nth0(2,Data,Horizontal/Vertical).
+set_orientation(Data,Horizontal,Vertical,NewData) :- replace(Data,2,Horizontal/Vertical,NewData).
 
 get_state(Data,State) :- nth0(3,Data,State).
 set_state(Data,State,NewData) :- replace(Data,3,State,NewData).
