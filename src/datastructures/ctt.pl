@@ -9,21 +9,21 @@
                 ]).
 
 :- use_module(tile).
-:- use_module(misc).
+:- use_module(misc/list_operations).
 
 
 %%% Implementation
-% main datastructure: [Size:[Horizontal, Vertical], Turn, Orientation:[Horizontal, Vertical], State, Tiles:[List of all tiles]]
+% main datastructure: [Size:[X, Y], Turn, Orientation:[X, Y], State, Tiles:[List of all tiles]]
 new_data([0/0,"",0/0,"",[]]).
 
-get_size(Data,Horizontal,Vertical) :- nth0(0,Data,Horizontal/Vertical).
-set_size(Data,Horizontal,Vertical,NewData) :- replace(Data,0,Horizontal/Vertical,NewData).
+get_size(Data,X,Y) :- nth0(0,Data,X/Y).
+set_size(Data,X,Y,NewData) :- replace(Data,0,X/Y,NewData).
 
 get_turn(Data,Turn) :- nth0(1,Data,Turn).
 set_turn(Data,Turn,NewData) :- replace(Data,1,Turn,NewData).
 
-get_orientation(Data,Horizontal,Vertical) :- nth0(2,Data,Horizontal/Vertical).
-set_orientation(Data,Horizontal,Vertical,NewData) :- replace(Data,2,Horizontal/Vertical,NewData).
+get_orientation(Data,X,Y) :- nth0(2,Data,X/Y).
+set_orientation(Data,X,Y,NewData) :- replace(Data,2,X/Y,NewData).
 
 get_state(Data,State) :- nth0(3,Data,State).
 set_state(Data,State,NewData) :- replace(Data,3,State,NewData).
@@ -38,9 +38,9 @@ add_tile(Data,NewTile,NewData) :- get_tiles(Data,Tiles), append(Tiles,[NewTile],
 test(size):-
     new_data(Data),
     set_size(Data,10,20,NewData),
-    get_size(NewData,Horizontal,Vertical),
-    assertion(Horizontal == 10),
-    assertion(Vertical == 20),
+    get_size(NewData,X,Y),
+    assertion(X == 10),
+    assertion(Y == 20),
     !.
 
 test(turn):-
@@ -53,9 +53,9 @@ test(turn):-
 test(orientation):-
     new_data(Data),
     set_orientation(Data,10,20,NewData),
-    get_orientation(NewData,Horizontal,Vertical),
-    assertion(Horizontal == 10),
-    assertion(Vertical == 20),
+    get_orientation(NewData,X,Y),
+    assertion(X == 10),
+    assertion(Y == 20),
     !.
 
 test(state):-
@@ -66,11 +66,16 @@ test(state):-
     !.
 
 test(tiles):-
-    new_data(Data),
-    tile:new_tile(Tile),
-    set_tiles(Data,[Tile],NewData),
-    get_tiles(NewData,Tiles),
-    assertion(member(Tile, Tiles)),
+    new_data(Data0),
+    new_tile(T1,0,0,""),
+    new_tile(T2,1,1,""),
+    new_tile(T3,2,2,""),
+    set_tiles(Data0,[T1,T2],Data1),
+    get_tiles(Data1,Tiles1),
+    assertion(Tiles1 == [T1,T2]),
+    add_tile(Data1,T3,Data2),
+    get_tiles(Data2,Tiles2),
+    assertion(Tiles2 == [T1,T2,T3]),
     !.
 
 :- end_tests(ctt_data).
