@@ -3,6 +3,14 @@
 :- use_module(library(pio)).
 :- use_module(library(dcg/basics)).
 
+parse(Retval) :-
+    phrase_from_stream(gram(Retval),user_input),!.
+% No parse, will return exit 10
+parse(_) :-
+    set_output(user_error),
+    write("Failed to parse."),
+    halt(10).
+
 % When all is parsed, stop and parse the end of input
 gram(_,1,1,1,1,1) --> !, eos.
 
@@ -80,13 +88,7 @@ parse_tile_list([Tile|Tiles],N) -->
     { N1 is N-1 },
     parse_tile_list(Tiles,N1).
 
-parse_size(Size1,Size2) --> "size", list(Size1), "*", list(Size2), "\n".
-
-list([]) --> [].
-list([H|T]) --> [H], list(T).
+parse_size(Size1,Size2) --> "size", integer(Size1), "*", integer(Size2), "\n".
 
 word(Word) --> nonblanks(W), {atom_codes(Word,W)}.
 words(Word) --> string(W), {atom_codes(Word,W)}.
-
-parse(Retval) :-
-    phrase_from_stream(gram(Retval),user_input).

@@ -7,15 +7,13 @@
                 get_neigh_tiles/3
     ]).
 
-:- use_module(misc/list_operations).
-
 % tile datastructure: [Coord: X/Y, Color]
 new_tile([X/Y,Color],X,Y,Color).
-get_tile_coord(Tile,X,Y) :- nth0(0,Tile,X/Y).
-set_tile_coord(Tile,X,Y,NewTile) :- replace(Tile,0,X/Y,NewTile).
+get_tile_coord([X/Y, _],X,Y).
+set_tile_coord([_,C],X,Y,[X/Y,C]).
 
-get_tile_color(Tile,Color):- nth0(1,Tile,Color).
-set_tile_color(Tile,NewColor,NewTile):- replace(Tile,1,NewColor,NewTile).
+get_tile_color([_,Color],Color).
+set_tile_color([C,_],NewColor,[C,NewColor]).
 
 get_neigh_tiles(_,[],[]).
 get_neigh_tiles(Tile,[TestTile|AllTiles],[TestTile|Neighs]) :-
@@ -28,6 +26,7 @@ get_neigh_tiles(Tile,[TestTile|AllTiles],[TestTile|Neighs]) :-
     member(T2_X/T2_Y, [T3_X/T1_Y, T3_X/T4_Y, T1_X/T3_Y, T4_X/T3_Y, T4_X/T1_Y, T4_X/T4_Y]),
     get_neigh_tiles(Tile,AllTiles,Neighs),
     !.
+
 get_neigh_tiles(Tile,[_|AllTiles],Neighs) :-
     get_neigh_tiles(Tile,AllTiles,Neighs).
 

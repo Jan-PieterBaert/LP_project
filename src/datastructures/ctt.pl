@@ -1,6 +1,6 @@
 % Module which has all functions to get/set elements of the ctt data structure
 :- module(ctt, [
-                new_data/1,
+                new_data/1, new_data/6,
                 get_size/3, set_size/4,
                 get_turn/2, set_turn/3,
                 get_orientation/3, set_orientation/4,
@@ -9,28 +9,29 @@
                 ]).
 
 :- use_module(tile).
-:- use_module(misc/list_operations).
 
 
 %%% Implementation
-% main datastructure: [Size:[X, Y], Turn, Orientation:[X, Y], State, Tiles:[List of all tiles]]
+% main datastructure: [Size:X/Y, Turn, Orientation:X/Y, State, Tiles:[List of all tiles]]
 new_data([0/0,"",0/0,"",[]]).
+new_data([SizeX/SizeY,Turn,OriX/OriY,State,Tiles],(SizeX,SizeY),Turn,(OriX,OriY),State,Tiles).
 
-get_size(Data,X,Y) :- nth0(0,Data,X/Y).
-set_size(Data,X,Y,NewData) :- replace(Data,0,X/Y,NewData).
+get_size([X/Y,_,_,_,_],X,Y).
+set_size([_,A,B,C,D],X,Y,[X/Y,A,B,C,D]).
 
-get_turn(Data,Turn) :- nth0(1,Data,Turn).
-set_turn(Data,Turn,NewData) :- replace(Data,1,Turn,NewData).
+get_turn([_,Turn,_,_,_],Turn).
+set_turn([A,_,B,C,D],Turn,[A,Turn,B,C,D]).
 
-get_orientation(Data,X,Y) :- nth0(2,Data,X/Y).
-set_orientation(Data,X,Y,NewData) :- replace(Data,2,X/Y,NewData).
+get_orientation([_,_,X/Y,_,_],X,Y).
+set_orientation([A,B,_,C,D],X,Y,[A,B,X/Y,C,D]).
 
-get_state(Data,State) :- nth0(3,Data,State).
-set_state(Data,State,NewData) :- replace(Data,3,State,NewData).
+get_state([_,_,_,State,_],State).
+set_state([A,B,C,_,D],State,[A,B,C,State,D]).
 
-get_tiles(Data,Tiles) :- nth0(4,Data,Tiles).
-set_tiles(Data,Tiles,NewData) :- replace(Data,4,Tiles,NewData).
-add_tile(Data,NewTile,NewData) :- get_tiles(Data,Tiles), append(Tiles,[NewTile],NewTiles), set_tiles(Data,NewTiles,NewData).
+get_tiles([_,_,_,_,Tiles],Tiles).
+set_tiles([A,B,C,D,_],Tiles,[A,B,C,D,Tiles]).
+% Will prepend a tile to the list of tiles
+add_tile([A,B,C,D,Tiles],NewTile,[A,B,C,D,[NewTile|Tiles]]).
 
 
 %%% Tests for con-tac-tic datastructure
@@ -75,7 +76,7 @@ test(tiles):-
     assertion(Tiles1 == [T1,T2]),
     add_tile(Data1,T3,Data2),
     get_tiles(Data2,Tiles2),
-    assertion(Tiles2 == [T1,T2,T3]),
+    assertion(Tiles2 == [T3,T1,T2]),
     !.
 
 :- end_tests(ctt_data).
