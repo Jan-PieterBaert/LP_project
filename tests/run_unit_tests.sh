@@ -1,2 +1,4 @@
 #!/bin/sh
-echo "run_tests." | swipl ../src/main.pl
+dir=$(dirname $0)
+
+echo "run_tests." | swipl $dir/../src/main.pl
