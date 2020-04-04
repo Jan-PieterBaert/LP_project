@@ -5,7 +5,8 @@
                 get_turn/2, set_turn/3,
                 get_orientation/3, set_orientation/4,
                 get_state/2, set_state/3,
-                get_tiles/2, set_tiles/3, add_tile/3
+                get_tiles/2, set_tiles/3, add_tile/3,
+                print_data/1
                 ]).
 
 :- use_module(tile).
@@ -33,6 +34,14 @@ set_tiles([A,B,C,D,_],Tiles,[A,B,C,D,Tiles]).
 % Will prepend a tile to the list of tiles
 add_tile([A,B,C,D,Tiles],NewTile,[A,B,C,D,[NewTile|Tiles]]).
 
+print_data([SizeX/SizeY,Turn,OriX/OriY,State,Tiles]):-
+    length(Tiles,L),
+    write("size: "), write(SizeX), write(" * "), write(SizeY), write("\n"),
+    write("turn: "), write(Turn), write("\n"),
+    write("orientation: "), write(OriX), write(" * "), write(OriY), write("\n"),
+    write("state: "), write(State), write("\n"),
+    write("tiles: "), write(L), write("\n"),
+    maplist(print_tile, Tiles).
 
 %%% Tests for con-tac-tic datastructure
 :- begin_tests(ctt_data).

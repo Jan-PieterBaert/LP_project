@@ -3,6 +3,7 @@
 :- use_module(misc/list_operations).
 :- use_module(datastructures/tile).
 :- use_module(misc/parse).
+:- use_module(solve).
 
 check_data_tiles([],_).
 check_data_tiles([Tile|Tiles],L) :-
@@ -34,6 +35,9 @@ main(Args) :-
     new_data(Data,Size,Turn,Ori,State,NewTiles),
     check_data(Data),
     printlines(Args),
-    printlines(Data).
-
-% wat doet read_string(user_input,"\n","\r",_,Codes) ?
+    print_data(Data),
+    get_all_states(Data,AllStates),
+    printlines(AllStates),
+    println("Data:"),
+    printlines(Data),
+    write("End\n").

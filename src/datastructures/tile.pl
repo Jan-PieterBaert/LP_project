@@ -4,7 +4,7 @@
                 get_tile_coord/3,set_tile_coord/4,
                 get_tile_color/2,set_tile_color/3,
 
-                get_neigh_tiles/3
+                get_neigh_tiles/3, print_tile/1
     ]).
 
 % tile datastructure: [Coord: X/Y, Color]
@@ -30,6 +30,9 @@ get_neigh_tiles(Tile,[TestTile|AllTiles],[TestTile|Neighs]) :-
 get_neigh_tiles(Tile,[_|AllTiles],Neighs) :-
     get_neigh_tiles(Tile,AllTiles,Neighs).
 
+print_tile([X/Y,Color]) :-
+    char_code("A",A), N is X+A, atom_codes(L,[N]),
+    write("  ("), write(L), write(Y), write(") -> "), write(Color), write("\n").
 
 :- begin_tests(tile).
 test(coord):-
