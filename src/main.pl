@@ -18,6 +18,11 @@ check_data(Data) :-
     get_tiles(Data,Tiles),
     check_data_tiles(Tiles,[X,Y]),
     !.
+% When the data check fails will return exit 3
+check_data(_) :-
+    set_output(user_error),
+    write("Invalid dataset"),
+    halt(3).
 
 fix_tiles([],[]).
 fix_tiles([((X,Y),Color)|Tiles],[NewTile|L]) :-

@@ -1,1 +1,1 @@
-:- module(board, [])
+:- module(board, []).

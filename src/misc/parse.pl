@@ -5,11 +5,11 @@
 
 parse(Retval) :-
     phrase_from_stream(gram(Retval),user_input),!.
-% No parse, will return exit 10
+% No parse, will return exit 4
 parse(_) :-
     set_output(user_error),
     write("Failed to parse."),
-    halt(10).
+    halt(4).
 
 % When all is parsed, stop and parse the end of input
 gram(_,1,1,1,1,1) --> !, eos.
