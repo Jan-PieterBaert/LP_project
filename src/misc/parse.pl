@@ -70,10 +70,10 @@ parse_tiles(Tiles) -->
     parse_tile_header(Number_Of_Tiles),
     parse_tile_list(Tiles,Number_Of_Tiles).
 
-parse_tile_coord((L,D)) -->
+parse_tile_coord((L,D1)) -->
     "(", nonblank(C1),
     integer(D), ")",
-    { char_code("A",C2), L is C1-C2, L >= 0, L < 26 }.
+    {D1 is D-1, char_code("A",C2), L is C1-C2, L >= 0, L < 26 }.
 
 parse_one_tile((Coord,Color)) --> whites,
     parse_tile_coord(Coord), whites,

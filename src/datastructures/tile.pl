@@ -38,8 +38,8 @@ get_neigh_coords_from_list([Coord|Coords], AllCoords, Neighs):-
     append(Result1,Result2,Neighs).
 
 print_tile([X/Y,Color]) :-
-    char_code("A",A), N is X+A, atom_codes(L,[N]),
-    write("    ("), write(L), write(Y), write(") -> "), write(Color), write("\n").
+    char_code("A",A), N is X+A, atom_codes(L,[N]), Y1 is Y+1,
+    write("    ("), write(L), write(Y1), write(") -> "), write(Color), write("\n").
 
 :- begin_tests(tile).
 test(coord):-
