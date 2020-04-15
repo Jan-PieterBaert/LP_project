@@ -1,5 +1,11 @@
-:- module(list_operations, [replace/4]).
+:- module(list_operations, [generate_pairs/3, generate_to_from/3]).
 
-% replace(+List, +Index, +Value, -NewList).
-replace([_|T], 0, X, [X|T]).
-replace([H|T], I, X, [H|R]):- I > 0, I1 is I-1, replace(T, I1, X, R).
+% Generate all possible pairs of elements in List1 and List2
+generate_pairs(List1, List2, Pairs) :-
+    findall((X/Y), (member(X, List1), member(Y, List2)), Pairs).
+
+% generate a list from X to Y, e.g. if X=0 and Y=3, the return value will be [0,1,2]
+generate_to_from(X,X,[]).
+generate_to_from(X,Y,[X|Retval]):-
+    X1 is X+1,
+    generate_to_from(X1,Y,Retval).
