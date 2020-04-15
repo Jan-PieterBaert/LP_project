@@ -36,12 +36,12 @@ add_tile([A,B,C,D,Tiles],NewTile,[A,B,C,D,[NewTile|Tiles]]).
 
 print_data([SizeX/SizeY,Turn,OriX/OriY,State,Tiles]):-
     length(Tiles,L),
-    write("size: "), write(SizeX), write(" * "), write(SizeY), write("\n"),
-    write("turn: "), write(Turn), write("\n"),
-    write("orientation: "), write(OriX), write(" * "), write(OriY), write("\n"),
-    write("state: "), write(State), write("\n"),
     write("tiles: "), write(L), write("\n"),
-    maplist(print_tile, Tiles).
+    maplist(print_tile, Tiles),
+    write("state: "), write(State), write("\n"),
+    write("orientation: "), write(OriX), write(" * "), write(OriY), write("\n"),
+    write("size: "), write(SizeX), write(" * "), write(SizeY), write("\n"),
+    write("turn: "), write(Turn), write("\n").
 
 %%% Tests for con-tac-tic datastructure
 :- begin_tests(ctt_data).

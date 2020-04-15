@@ -59,14 +59,20 @@ get_all_free_coords([C|Coords], [C|Taken], Result):-
 get_all_free_coords([C|Coords], Taken, [C|Result]):-
     get_all_free_coords(Coords,Taken,Result).
 
+% Return the new turn for the new state
+getNewTurn(Data,Turn,NewTurn):-
+    get_orientation(Data,NewTurn,Turn).
+
+getNewTurn(Data,Turn,NewTurn):-
+    get_orientation(Data,Turn,NewTurn).
+
 % Generate the new states from a list of options and the current state
 % generate_states(A,[X/Y|B],_):- write("Genstates:"), write(B), write(X/Y), write("\n").
-generate_states(_,[],[]).
-generate_states(Data,[X/Y|Options],[NewState|States]):-
-    get_turn(Data,Turn),
+generate_states(_,_,[],[]).
+generate_states(Data,Turn,[X/Y|Options],[NewState|States]):-
     new_tile(Tile,X,Y,Turn),
     add_tile(Data,Tile,NewState),
-    generate_states(Data,Options,States).
+    generate_states(Data,Turn,Options,States).
 
 % Get all possible next states
 get_all_states(Data,States):-
@@ -80,6 +86,9 @@ get_all_states(Data,States):-
     append(FreeCoords,NewCoords,AllCoords),
     get_neigh_coords_from_list(AllCoords, FreeCoords, Options),
     sort(Options, SortedOptions),
-    generate_states(Data,SortedOptions,States).
+    get_turn(Data,Turn),
+    getNewTurn(Data,Turn,NewTurn),
+    set_turn(Data,NewTurn,NewData),
+    generate_states(NewData,Turn,SortedOptions,States).
 
 get_best_state(Data,State):- fail.
