@@ -130,7 +130,7 @@ get_all_states(Data,States):-
     append(NewCoords,CheckWinCoords1,CheckWinCoords),
     generate_states(NewData,Turn,SortedOptions,CheckWinCoords,States).
 
-has_win_state([WinState|States],WinState):-
+has_win_state([WinState|_],WinState):-
     get_state(WinState,Win),
     string_concat("won by",_,Win),
     !.
