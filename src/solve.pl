@@ -66,13 +66,50 @@ getNewTurn(Data,Turn,NewTurn):-
 getNewTurn(Data,Turn,NewTurn):-
     get_orientation(Data,Turn,NewTurn).
 
+% Filter tiles based on color
+filter_tiles_to_coords([],_,[]).
+filter_tiles_to_coords([Tile|Tiles],Turn,[X/Y|Coords]):-
+    new_tile(Tile,X,Y,Turn),
+    filter_tiles_to_coords(Tiles,Turn,Coords),
+    !.
+filter_tiles_to_coords([_|Tiles],Turn,Coords):-
+    filter_tiles_to_coords(Tiles,Turn,Coords).
+
+
+% Check if the board is won by one of the players
+check_win([C|Coords],Data,Turn,NewData):-
+    % Check floadfill
+    % write("\nData:"),write(Data),write("\n"),
+    % write("Coords"),write(Coords),write("\n"),
+    % write("Turn:"),write(Turn),write("\n"),
+    floodfill([C],Coords),
+    % write("WIN!\n"),
+    string_concat("won by ",Turn,NewState),
+    set_state(Data,NewState,NewData),
+    % write("Data:"),write(NewData),write("\n"),
+    !.
+check_win(_,Data,_,Data).
+
+floodfill(_,[]).
+floodfill([Todo|Todos],Coords):-
+    get_neigh_coords(Todo,Coords,Neighs),
+    remove_elements(Coords,Neighs,NewCoords),
+    append(Todos,Neighs,NewTodos),
+    % write("Coords: "),write(Coords),write(" | "),write(NewCoords),write("\n"),
+    % write("Todos: "),write(Todo),write(" | "),write(NewTodos),write("\n"),
+    % write("Neigh: "),write(Neighs),write("\n"),
+    % write("---\n"),
+    floodfill(NewTodos,NewCoords),
+    !.
+
 % Generate the new states from a list of options and the current state
 % generate_states(A,[X/Y|B],_):- write("Genstates:"), write(B), write(X/Y), write("\n").
-generate_states(_,_,[],[]).
-generate_states(Data,Turn,[X/Y|Options],[NewState|States]):-
+generate_states(_,_,[],_,[]).
+generate_states(Data,Turn,[X/Y|Options],Coords,[NewState|States]):-
     new_tile(Tile,X,Y,Turn),
-    add_tile(Data,Tile,NewState),
-    generate_states(Data,Turn,Options,States).
+    add_tile(Data,Tile,State),
+    check_win([X/Y|Coords],State,Turn,NewState),
+    generate_states(Data,Turn,Options,Coords,States).
 
 % Get all possible next states
 get_all_states(Data,States):-
@@ -85,10 +122,12 @@ get_all_states(Data,States):-
     get_all_free_coords(Coords, Taken_Coords_Sorted, FreeCoords),
     append(FreeCoords,NewCoords,AllCoords),
     get_neigh_coords_from_list(AllCoords, FreeCoords, Options),
-    sort(Options, SortedOptions),
+    sort(Options,SortedOptions),
     get_turn(Data,Turn),
     getNewTurn(Data,Turn,NewTurn),
     set_turn(Data,NewTurn,NewData),
-    generate_states(NewData,Turn,SortedOptions,States).
+    filter_tiles_to_coords(Tiles,Turn,CheckWinCoords1),
+    append(NewCoords,CheckWinCoords1,CheckWinCoords),
+    generate_states(NewData,Turn,SortedOptions,CheckWinCoords,States).
 
 get_best_state(Data,State):- fail.
