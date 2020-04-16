@@ -141,3 +141,6 @@ get_best_state(Data,WinState):-
     get_all_states(Data,States),
     has_win_state(States,WinState),
     !.
+get_best_state(Data,State):-
+    % Currently just return the first possible state if no win is possible
+    get_all_states(Data,[State|_]).
