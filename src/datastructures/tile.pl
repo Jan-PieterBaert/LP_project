@@ -14,27 +14,27 @@ get_tile_coord([X/Y, _], X, Y).
 set_tile_coord([_, C], X, Y, [X/Y, C]).
 
 get_tile_color([_, Color], Color).
-set_tile_color([C, _], NewColor, [C, NewColor]).
+set_tile_color([C, _], New_color, [C, New_color]).
 
 get_neigh_coords(_, [], []).
-get_neigh_coords(Coord, [TestCoord|AllCoords], [TestCoord|Neighs]) :-
+get_neigh_coords(Coord, [Test_coord|All_coords], [Test_coord|Neighs]) :-
     Coord = T1_X/T1_Y,
-    TestCoord = T2_X/T2_Y,
+    Test_coord = T2_X/T2_Y,
     T3_X is T1_X - 1,
     T4_X is T1_X + 1,
     T3_Y is T1_Y - 1,
     T4_Y is T1_Y + 1,
     member(T2_X/T2_Y, [T3_X/T1_Y, T3_X/T4_Y, T1_X/T3_Y, T4_X/T3_Y, T4_X/T1_Y, T4_X/T4_Y]),
-    get_neigh_coords(Coord, AllCoords, Neighs),
+    get_neigh_coords(Coord, All_coords, Neighs),
     !.
 
-get_neigh_coords(Coord, [_|AllCoords], Neighs) :-
-    get_neigh_coords(Coord, AllCoords, Neighs).
+get_neigh_coords(Coord, [_|All_coords], Neighs) :-
+    get_neigh_coords(Coord, All_coords, Neighs).
 
 get_neigh_coords_from_list([], _, []).
-get_neigh_coords_from_list([Coord|Coords], AllCoords, Neighs) :-
-    get_neigh_coords(Coord, AllCoords, Result1),
-    get_neigh_coords_from_list(Coords, AllCoords, Result2),
+get_neigh_coords_from_list([Coord|Coords], All_coords, Neighs) :-
+    get_neigh_coords(Coord, All_coords, Result1),
+    get_neigh_coords_from_list(Coords, All_coords, Result2),
     append(Result1, Result2, Neighs).
 
 print_tile([X/Y, Color]) :-
@@ -44,16 +44,16 @@ print_tile([X/Y, Color]) :-
 :- begin_tests(tile).
 test(coord) :-
     new_tile(Tile, 0, 0, ""),
-    set_tile_coord(Tile, 10, 20, NewTile),
-    get_tile_coord(NewTile, X, Y),
+    set_tile_coord(Tile, 10, 20, New_tile),
+    get_tile_coord(New_tile, X, Y),
     assertion(X == 10),
     assertion(Y == 20),
     !.
 
 test(color) :-
     new_tile(Tile, 0, 0, ""),
-    set_tile_color(Tile, "Testcolor", NewTile),
-    get_tile_color(NewTile, Color),
+    set_tile_color(Tile, "Testcolor", New_tile),
+    get_tile_color(New_tile, Color),
     assertion(Color == "Testcolor"),
     !.
 

@@ -32,7 +32,7 @@ set_state([A, B, C, _, D], State, [A, B, C, State, D]).
 get_tiles([_, _, _, _, Tiles], Tiles).
 set_tiles([A, B, C, D, _], Tiles, [A, B, C, D, Tiles]).
 % Will prepend a tile to the list of tiles
-add_tile([A, B, C, D, Tiles], NewTile, [A, B, C, D, [NewTile|Tiles]]).
+add_tile([A, B, C, D, Tiles], New_tile, [A, B, C, D, [New_tile|Tiles]]).
 
 print_data([SizeX/SizeY, Turn, OriX/OriY, State, Tiles]) :-
     length(Tiles, L),
@@ -47,31 +47,31 @@ print_data([SizeX/SizeY, Turn, OriX/OriY, State, Tiles]) :-
 :- begin_tests(ctt_data).
 test(size) :-
     new_data(Data),
-    set_size(Data, 10, 20, NewData),
-    get_size(NewData, X, Y),
+    set_size(Data, 10, 20, New_data),
+    get_size(New_data, X, Y),
     assertion(X == 10),
     assertion(Y == 20),
     !.
 
 test(turn) :-
     new_data(Data),
-    set_turn(Data, "Testturn", NewData),
-    get_turn(NewData, Turn),
+    set_turn(Data, "Testturn", New_data),
+    get_turn(New_data, Turn),
     assertion(Turn == "Testturn"),
     !.
 
 test(orientation) :-
     new_data(Data),
-    set_orientation(Data, 10, 20, NewData),
-    get_orientation(NewData, X, Y),
+    set_orientation(Data, 10, 20, New_data),
+    get_orientation(New_data, X, Y),
     assertion(X == 10),
     assertion(Y == 20),
     !.
 
 test(state) :-
     new_data(Data),
-    set_state(Data, "Teststate", NewData),
-    get_state(NewData, State),
+    set_state(Data, "Teststate", New_data),
+    get_state(New_data, State),
     assertion(State == "Teststate"),
     !.
 

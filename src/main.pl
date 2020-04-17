@@ -27,8 +27,8 @@ check_data(_) :-
     halt(3).
 
 fix_tiles([], []).
-fix_tiles([((X, Y), Color)|Tiles], [NewTile|L]) :-
-    new_tile(NewTile, X, Y, Color),
+fix_tiles([((X, Y), Color)|Tiles], [New_tile|L]) :-
+    new_tile(New_tile, X, Y, Color),
     fix_tiles(Tiles, L).
 
 % Get the states that should be printed, this is all states in case TEST is in the cli Args, otherwise the best state
@@ -52,13 +52,13 @@ print_states([State|States]) :-
 
 main :-
     current_prolog_flag(argv, Argv),
-    sort(Argv, ArgvSorted),
-    main(ArgvSorted).
+    sort(Argv, Argv_sorted),
+    main(Argv_sorted).
 
 main(Args) :-
     parse([Size, Turn, Ori, State, Tiles]),
-    fix_tiles(Tiles, NewTiles),
-    new_data(Data, Size, Turn, Ori, State, NewTiles),
+    fix_tiles(Tiles, New_tiles),
+    new_data(Data, Size, Turn, Ori, State, New_tiles),
     check_data(Data),
     get_new_states(Data, Args, States),
     print_states(States, Args),
