@@ -1,10 +1,10 @@
-:- module(io_operations, [println/1,printlines/1]).
+:- module(io_operations, [println/1, printlines/1]).
 
-println(X):-
+println(X) :-
     write(X),
     write("\n").
 
 printlines([]).
-printlines([L|X]):-
+printlines([L|X]) :-
     println(L),
     printlines(X).

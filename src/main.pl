@@ -6,19 +6,19 @@
 :- use_module(solve).
 
 % Check that the color of each tile is valid
-check_data_tiles([],_).
-check_data_tiles([Tile|Tiles],L) :-
-    get_tile_color(Tile,Color),
-    member(Color,L),
-    check_data_tiles(Tiles,L).
+check_data_tiles([], _).
+check_data_tiles([Tile|Tiles], L) :-
+    get_tile_color(Tile, Color),
+    member(Color, L),
+    check_data_tiles(Tiles, L).
 
 % Check the dataset to see if it's valid
 check_data(Data) :-
     % check that the names of the colors in tiles/turn are correct
-    get_orientation(Data,X,Y),
-    get_turn(Data,Turn), member(Turn, [X,Y]),
-    get_tiles(Data,Tiles),
-    check_data_tiles(Tiles,[X,Y]),
+    get_orientation(Data, X, Y),
+    get_turn(Data, Turn), member(Turn, [X, Y]),
+    get_tiles(Data, Tiles),
+    check_data_tiles(Tiles, [X, Y]),
     !.
 % When the data check fails will return exit 3
 check_data(_) :-
@@ -26,42 +26,42 @@ check_data(_) :-
     write("Invalid dataset"),
     halt(3).
 
-fix_tiles([],[]).
-fix_tiles([((X,Y),Color)|Tiles],[NewTile|L]) :-
-    new_tile(NewTile,X,Y,Color),
-    fix_tiles(Tiles,L).
+fix_tiles([], []).
+fix_tiles([((X, Y), Color)|Tiles], [NewTile|L]) :-
+    new_tile(NewTile, X, Y, Color),
+    fix_tiles(Tiles, L).
 
 % Get the states that should be printed, this is all states in case TEST is in the cli Args, otherwise the best state
-get_new_states(Data,Args,States):-
-    member('TEST',Args),!,
-    get_all_states(Data,States).
-get_new_states(Data,_,[State]):-
-    get_best_state(Data,State).
+get_new_states(Data, Args, States) :-
+    member('TEST', Args), !,
+    get_all_states(Data, States).
+get_new_states(Data, _, [State]) :-
+    get_best_state(Data, State).
 
 % Print the states, this is in a SVG manner when SVG is in the cli Args, else just to stdout
-print_states(_,Args):-
-    member('SVG',Args),!,
+print_states(_, Args) :-
+    member('SVG', Args), !,
     println("SVG output").
-print_states(States,_):-
+print_states(States, _) :-
     print_states(States).
-print_states([State]):-
+print_states([State]) :-
     print_data(State).
-print_states([State|States]):-
-    print_data(State),println("~"),
+print_states([State|States]) :-
+    print_data(State), println("~"),
     print_states(States).
 
 main :-
     current_prolog_flag(argv, Argv),
-    sort(Argv,ArgvSorted),
+    sort(Argv, ArgvSorted),
     main(ArgvSorted).
 
 main(Args) :-
-    parse([Size,Turn,Ori,State,Tiles]),
+    parse([Size, Turn, Ori, State, Tiles]),
     fix_tiles(Tiles, NewTiles),
-    new_data(Data,Size,Turn,Ori,State,NewTiles),
+    new_data(Data, Size, Turn, Ori, State, NewTiles),
     check_data(Data),
-    get_new_states(Data,Args,States),
-    print_states(States,Args),
+    get_new_states(Data, Args, States),
+    print_states(States, Args),
     !.
     % printlines(States),
-    % print_states(States,Args).
+    % print_states(States, Args).
