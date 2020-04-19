@@ -1,6 +1,5 @@
 # Tests
-
-Hier komen je tests
-
-Hint: PLUnit
-Hint: Testen zijn belangrijk
+De testen bestaan uit:
+- PLUnittests in de code
+- input/output bestanden
+- input bestand met verwachte exit code

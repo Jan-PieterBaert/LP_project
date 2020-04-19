@@ -18,13 +18,12 @@ set_tile_color([C, _], New_color, [C, New_color]).
 
 get_neigh_coords(_, [], []).
 get_neigh_coords(Coord, [Test_coord|All_coords], [Test_coord|Neighs]) :-
-    Coord = T1_X/T1_Y,
-    Test_coord = T2_X/T2_Y,
-    T3_X is T1_X - 1,
-    T4_X is T1_X + 1,
-    T3_Y is T1_Y - 1,
-    T4_Y is T1_Y + 1,
-    member(T2_X/T2_Y, [T3_X/T1_Y, T3_X/T4_Y, T1_X/T3_Y, T4_X/T3_Y, T4_X/T1_Y, T4_X/T4_Y]),
+    Coord = X/Y,
+    Minus_one_X is X - 1,
+    Plus_one_X  is X + 1,
+    Minus_one_Y is Y - 1,
+    Plus_one_Y  is Y + 1,
+    member(Test_coord, [Minus_one_X/Y, Minus_one_X/Plus_one_Y, X/Minus_one_Y, Plus_one_X/Minus_one_Y, Plus_one_X/Y, X/Plus_one_Y]),
     get_neigh_coords(Coord, All_coords, Neighs),
     !.
 
@@ -73,7 +72,7 @@ test(neighborhood) :-
     T11=3/3,
     T12=3/4,
     get_neigh_coords(Tile, [T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12], Result),
-    assertion(Result == [T1, T2, T5, T9, T10, T11]),
+    assertion(Result == [T1, T2, T5, T7, T9, T10]),
     !.
 
 :- end_tests(tile).

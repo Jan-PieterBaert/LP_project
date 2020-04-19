@@ -6,12 +6,12 @@
 :- use_module(misc/list_operations).
 
 % Generate the extra coords for the fields outside the border, where the color starts
-generate_coords(0, _, [], 0) :-!.
+generate_coords(-1, _, [], 0) :-!.
 generate_coords(X, Y, [X/Y|Coords], 0) :-
     X1 is X-1,
     generate_coords(X1, Y, Coords, 0).
 
-generate_coords(_, 0, [], 1) :-!.
+generate_coords(_, -1, [], 1) :-!.
 generate_coords(X, Y, [X/Y|Coords], 1) :-
     Y1 is Y-1,
     generate_coords(X, Y1, Coords, 1).
@@ -25,8 +25,8 @@ get_new_coords(Data, 0, New_coords) :-
 
 get_new_coords(Data, 1, New_coords) :-
     get_size(Data, Max, _),
-    generate_coords(-1, Max, New_coords1, 1),
-    generate_coords(Max, Max, New_coords2, 1),
+    generate_coords(-1, Max, New_coords1, 0),
+    generate_coords(Max, Max, New_coords2, 0),
     append(New_coords1, New_coords2, New_coords).
 
 % Get the direction of the board (if player 0 or 1 has the turn)
@@ -82,15 +82,15 @@ check_win([C|Coords], Data, Turn, New_data) :-
     % write("\n_data:"), write(Data), write("\n"),
     % write("Coords"), write(Coords), write("\n"),
     % write("Turn:"), write(Turn), write("\n"),
+    % write("Coords:"), write([C|Coords]), write("\n"),
     floodfill([C], Coords),
-    % write("WIN!\n"),
     string_concat("won by ", Turn, New_state),
     set_state(Data, New_state, New_data),
     % write("Data:"), write(New_data), write("\n"),
     !.
 check_win(_, Data, _, Data).
 
-floodfill(_, []).
+floodfill(_, []) :- !.
 floodfill([Todo|Todos], Coords) :-
     get_neigh_coords(Todo, Coords, Neighs),
     remove_elements(Coords, Neighs, New_coords),
