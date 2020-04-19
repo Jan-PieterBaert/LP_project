@@ -4,38 +4,37 @@
     ]).
 
 :- use_module(misc/list_operations).
+:- use_module(misc/io_operations).
 
 % Generate the extra coords for the fields outside the border, where the color starts
-generate_coords(-1, _, [], 0) :-!.
-generate_coords(X, Y, [X/Y|Coords], 0) :-
+generate_coords_0(-1, _, []) :-!.
+generate_coords_0(X, Y, [X/Y|Coords]) :-
     X1 is X-1,
-    generate_coords(X1, Y, Coords, 0).
+    generate_coords_0(X1, Y, Coords).
 
-generate_coords(_, -1, [], 1) :-!.
-generate_coords(X, Y, [X/Y|Coords], 1) :-
+generate_coords_1(_, -1, []) :-!.
+generate_coords_1(X, Y, [X/Y|Coords]) :-
     Y1 is Y-1,
-    generate_coords(X, Y1, Coords, 1).
+    generate_coords_1(X, Y1, Coords).
 
 % Get the extra coords for the fields outside the border, where the color starts
 get_new_coords(Data, 0, New_coords) :-
-    get_size(Data, Max, _),
-    generate_coords(Max, -1, New_coords1, 0),
-    generate_coords(Max, Max, New_coords2, 0),
+    get_size(Data, Max_X, Max_Y),
+    generate_coords_0(Max_X, -1   , New_coords1),
+    generate_coords_0(Max_X, Max_Y, New_coords2),
     append(New_coords1, New_coords2, New_coords).
 
 get_new_coords(Data, 1, New_coords) :-
-    get_size(Data, Max, _),
-    generate_coords(-1, Max, New_coords1, 0),
-    generate_coords(Max, Max, New_coords2, 0),
+    get_size(Data, Max_X, Max_Y),
+    generate_coords_1(-1   , Max_Y, New_coords1),
+    generate_coords_1(Max_X, Max_Y, New_coords2),
     append(New_coords1, New_coords2, New_coords).
 
 % Get the direction of the board (if player 0 or 1 has the turn)
-state_direction(Data, 0) :-
-    get_turn(Data, Turn),
+state_direction(Data, Turn, 0) :-
     get_orientation(Data, Turn, _).
 
-state_direction(Data, 1) :-
-    get_turn(Data, Turn),
+state_direction(Data, Turn, 1) :-
     get_orientation(Data, _, Turn).
 
 
@@ -76,29 +75,35 @@ filter_tiles_to_coords([_|Tiles], Turn, Coords) :-
     filter_tiles_to_coords(Tiles, Turn, Coords).
 
 
-% Check if the board is won by one of the players
+% Check if the board is won by the player currently in turn
 check_win([C|Coords], Data, Turn, New_data) :-
     % Check floadfill
-    % write("\n_data:"), write(Data), write("\n"),
-    % write("Coords"), write(Coords), write("\n"),
-    % write("Turn:"), write(Turn), write("\n"),
-    % write("Coords:"), write([C|Coords]), write("\n"),
+    write_debug([
+    "\n_data:", Data, "\n",
+    "Coords", Coords, "\n",
+    "Turn:", Turn, "\n",
+    "Coords:", [C|Coords], "\n"
+    ]),
     floodfill([C], Coords),
     string_concat("won by ", Turn, New_state),
     set_state(Data, New_state, New_data),
-    % write("Data:"), write(New_data), write("\n"),
+    write_debug(["Game won by ", Turn, "\n"]),
     !.
-check_win(_, Data, _, Data).
+% else
+check_win(_, Data, Turn, Data) :-
+    write_debug(["Game not won by ", Turn, "\n"]).
 
 floodfill(_, []) :- !.
 floodfill([Todo|Todos], Coords) :-
     get_neigh_coords(Todo, Coords, Neighs),
     remove_elements(Coords, Neighs, New_coords),
     append(Todos, Neighs, New_todos),
-    % write("Coords: "), write(Coords), write(" | "), write(New_coords), write("\n"),
-    % write("Todos: "), write(Todo), write(" | "), write(New_todos), write("\n"),
-    % write("Neigh: "), write(Neighs), write("\n"),
-    % write("---\n"),
+    write_debug([
+    "Coords: ", Coords, " | ", New_coords, "\n",
+    "Todos: ", Todo, " | ", New_todos, "\n",
+    "Neigh: ", Neighs, "\n",
+    "---\n"
+    ]),
     floodfill(New_todos, New_coords),
     !.
 
@@ -113,7 +118,8 @@ generate_states(Data, Turn, [X/Y|Options], Coords, [New_state|States]) :-
 
 % Get all possible next states
 get_all_states(Data, States) :-
-    state_direction(Data, Direction),
+    get_turn(Data, Turn),
+    state_direction(Data, Turn, Direction),
     get_tiles(Data, Tiles),
     get_new_coords(Data, Direction, New_coords),
     get_all_coords_in_bound(Data, Coords),
@@ -123,7 +129,6 @@ get_all_states(Data, States) :-
     append(Free_coords, New_coords, All_coords),
     get_neigh_coords_from_list(All_coords, Free_coords, Options),
     sort(Options, Sorted_options),
-    get_turn(Data, Turn),
     get_newTurn(Data, Turn, New_turn),
     set_turn(Data, New_turn, New_data),
     filter_tiles_to_coords(Tiles, Turn, Check_winCoords1),
