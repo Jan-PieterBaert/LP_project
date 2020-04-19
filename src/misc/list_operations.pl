@@ -5,7 +5,7 @@ generate_pairs(List1, List2, Pairs) :-
     findall((X/Y), (member(X, List1), member(Y, List2)), Pairs).
 
 % generate a list from X to Y, e.g. if X=0 and Y=3, the return value will be [0, 1, 2]
-generate_to_from(X, X, []).
+generate_to_from(X, X, []) :- !.
 generate_to_from(X, Y, [X|Retval]) :-
     X1 is X+1,
     generate_to_from(X1, Y, Retval).

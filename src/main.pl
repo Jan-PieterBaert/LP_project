@@ -63,5 +63,3 @@ main(Args) :-
     get_new_states(Data, Args, States),
     print_states(States, Args),
     !.
-    % printlines(States),
-    % print_states(States, Args).
