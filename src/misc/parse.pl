@@ -2,14 +2,13 @@
 :- module(parse, [parse/1]).
 :- use_module(library(pio)).
 :- use_module(library(dcg/basics)).
+:- use_module(io_operations).
 
 parse(Retval) :-
     phrase_from_stream(gram(Retval), user_input), !.
 % No parse, will return exit 4
 parse(_) :-
-    set_output(user_error),
-    write("Failed to parse."),
-    halt(4).
+    exit_with_code_and_message(4, "Failed to parse.").
 
 % When all is parsed, stop and parse the end of input
 gram(_, 1, 1, 1, 1, 1) --> !, eos.

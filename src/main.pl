@@ -22,9 +22,7 @@ check_data(Data) :-
     !.
 % When the data check fails will return exit 3
 check_data(_) :-
-    set_output(user_error),
-    write("Invalid dataset"),
-    halt(3).
+    exit_with_code_and_message(3, "Invalid dataset").
 
 fix_tiles([], []).
 fix_tiles([((X, Y), Color)|Tiles], [New_tile|L]) :-
