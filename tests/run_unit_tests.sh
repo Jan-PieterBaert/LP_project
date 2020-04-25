@@ -1,4 +1,4 @@
 #!/bin/sh
-dir=$(dirname $0)
+# To get the path of the root of this project
 
-echo "run_tests." | swipl $dir/../src/main.pl
+echo "run_tests." | swipl $DIR/src/main.pl
