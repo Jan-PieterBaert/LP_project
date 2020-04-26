@@ -9,8 +9,13 @@ tiles_to_coords([Tile|Tiles], [X/Y|Coords]) :-
 print_svg(State) :-
     get_size(State, X, Y),
     get_orientation(State, Color_X, Color_Y),
+
+    % Print the header containing some stuff
     print_header(X, Y),
 
+    % --- Starting here it's specific for 1 board
+
+    % Print the translate line
     print_translate(),
 
     print_players(X, Y, Color_X, Color_Y),
@@ -23,8 +28,8 @@ print_svg(State) :-
     get_tiles(State, Tiles),
     maplist(print_filled_tile, Tiles),
 
-    print_footer,
-    !.
+    % The </g> is per board, the </svg> is general
+    print_footer.
 
 print_header(X, Y) :-
     VBox_X is 1.75 * (2 + X + Y/2),
@@ -61,12 +66,12 @@ print_players(X1, Y1, Color_X, Color_Y) :-
     X is X1 - 1,
     Y is Y1 - 1,
     writef("
-            <text text-anchor=\"start\" fill=\"%w\" font-size=\"0.5\" y=\"-1.1\" x=\"-0.5\">Player 1</text>
-                        <polygon fill=\"%w\" points=\"-1,-1 0,0 %w,0 %w,-1\"></polygon>
-                        <polygon fill=\"%w\" points=\"-1,%w 0,%w %w,%w %w,%w\"></polygon>
-            <text text-anchor=\"start\" fill=\"%w\" font-size=\"0.5\" transform=\"rotate(90)\" y=\"-%w.1\" x=\"-0.5\">Player 2</text>
-                        <polygon fill=\"%w\" points=\"-1,-1 0,0 0,%w -1,%w\"></polygon>
-                        <polygon fill=\"%w\" points=\"%w,-1 %w,0 %w,%w %w,%w\"></polygon></g>\n
+<text text-anchor=\"start\" fill=\"%w\" font-size=\"0.5\" y=\"-1.1\" x=\"-0.5\">Player 1</text>
+            <polygon fill=\"%w\" points=\"-1,-1 0,0 %w,0 %w,-1\"></polygon>
+            <polygon fill=\"%w\" points=\"-1,%w 0,%w %w,%w %w,%w\"></polygon>
+<text text-anchor=\"start\" fill=\"%w\" font-size=\"0.5\" transform=\"rotate(90)\" y=\"-%w.1\" x=\"-0.5\">Player 2</text>
+            <polygon fill=\"%w\" points=\"-1,-1 0,0 0,%w -1,%w\"></polygon>
+            <polygon fill=\"%w\" points=\"%w,-1 %w,0 %w,%w %w,%w\"></polygon></g>\n
                         ", [
                         Color_X,
                         Color_X, X, X1,
