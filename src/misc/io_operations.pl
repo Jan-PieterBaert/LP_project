@@ -6,8 +6,7 @@
     ]).
 
 println(X) :-
-    write(X),
-    write("\n").
+    writeln(X).
 
 printlines([]).
 printlines([L|X]) :-
