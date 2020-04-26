@@ -20,6 +20,10 @@ print_svg(State) :-
 
     print_players(X, Y, Color_X, Color_Y),
 
+    % Print the row/col indices (ABC/123)
+    print_row(X),
+    print_col(Y),
+
     % Fill in all the coordinates with empty tiles
     get_all_coords_in_bound(State, Coords),
     maplist(print_empty_tile, Coords),
@@ -61,6 +65,18 @@ print_translate() :-
     writef("
         <g transform=\"matrix(1.73205080756 0 0.86602540378 1.5 3.46410161512 2.5)\"><g>
         ").
+
+print_row(-1).
+print_row(X) :-
+    X1 is X - 1,
+    print_row(X1),
+    char_code("A", A), N is X+A, atom_codes(L, [N]),
+    writef("<text class=\"row_or_col\" y=\"-0.65\" x=\"%w\">%w</text>\n", [X,L]).
+print_col(0).
+print_col(Y) :-
+    Y1 is Y - 1,
+    print_col(Y1),
+    writef("<text class=\"row_or_col\" x=\"-0.95\" y=\"%w\">%w</text>\n", [Y1,Y]).
 
 print_players(X1, Y1, Color_X, Color_Y) :-
     X is X1 - 1,

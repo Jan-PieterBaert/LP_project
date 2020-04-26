@@ -1,4 +1,4 @@
-% Module which has all functions to get/set elements of the ctt data structure
+% Module which has all functions to get/set elements of the main con-tac-tic data structure
 :- module(ctt, [
                 new_data/1, new_data/6,
                 get_size/3, set_size/4,
@@ -14,26 +14,34 @@
 
 %%% Implementation
 % main datastructure: [Size:X/Y, Turn, Orientation:X/Y, State, Tiles:[List of all tiles]]
+% Function to give a new data, this can be either empty (the first line) or filled with given values
 new_data([0/0, "", 0/0, "", []]).
 new_data([SizeX/SizeY, Turn, OriX/OriY, State, Tiles], (SizeX, SizeY), Turn, (OriX, OriY), State, Tiles).
 
+%% Definitions of getter and setters on the data
+% For the size (Horizontal/Vertical)
 get_size([X/Y, _, _, _, _], X, Y).
 set_size([_, A, B, C, D], X, Y, [X/Y, A, B, C, D]).
 
+% For the turn
 get_turn([_, Turn, _, _, _], Turn).
 set_turn([A, _, B, C, D], Turn, [A, Turn, B, C, D]).
 
+% For the orientation (the Horizontal/Vertical player)
 get_orientation([_, _, X/Y, _, _], X, Y).
 set_orientation([A, B, _, C, D], X, Y, [A, B, X/Y, C, D]).
 
+% For the state of the game (undecided/Won by player1/2)
 get_state([_, _, _, State, _], State).
 set_state([A, B, C, _, D], State, [A, B, C, State, D]).
 
+% For the tiles
 get_tiles([_, _, _, _, Tiles], Tiles).
 set_tiles([A, B, C, D, _], Tiles, [A, B, C, D, Tiles]).
-% Will prepend a tile to the list of tiles
+%% And extra to add a tile to the list
 add_tile([A, B, C, D, Tiles], New_tile, [A, B, C, D, [New_tile|Tiles]]).
 
+% Used for printing the state
 print_data([SizeX/SizeY, Turn, OriX/OriY, State, Tiles]) :-
     length(Tiles, L),
     write("tiles: "), write(L), write("\n"),
