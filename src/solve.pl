@@ -15,10 +15,10 @@ generate_coords_min_1(-1, _, []) :-!.
 generate_coords_min_1(X, Y, [X/Y|Coords]) :-
     X1 is X-1,
     generate_coords_min_1(X1, Y, Coords).
-generate_coords_1(_, -1, []) :-!.
-generate_coords_1(X, Y, [X/Y|Coords]) :-
+generate_coords_max_1(_, -1, []) :-!.
+generate_coords_max_1(X, Y, [X/Y|Coords]) :-
     Y1 is Y-1,
-    generate_coords_1(X, Y1, Coords).
+    generate_coords_max_1(X, Y1, Coords).
 
 
 % Get the extra coords for the fields outside the border, where the color starts
@@ -31,8 +31,8 @@ get_new_coords(Data, -1, New_coords) :-
     append(New_coords1, New_coords2, New_coords).
 get_new_coords(Data, 1, New_coords) :-
     get_size(Data, Max_X, Max_Y),
-    generate_coords_1(-1   , Max_Y, New_coords1),
-    generate_coords_1(Max_X, Max_Y, New_coords2),
+    generate_coords_max_1(-1   , Max_Y, New_coords1),
+    generate_coords_max_1(Max_X, Max_Y, New_coords2),
     append(New_coords1, New_coords2, New_coords).
 
 
