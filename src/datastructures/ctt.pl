@@ -1,5 +1,6 @@
 % Module which has all functions to get/set elements of the main con-tac-tic data structure
 :- module(ctt, [
+                win_options/1,
                 new_data/1, new_data/6,
                 get_size/3, set_size/4,
                 get_turn/2, set_turn/3,
@@ -11,6 +12,8 @@
 
 :- use_module(tile).
 
+% The possible states which indicate a win
+win_options([-10,10]).
 
 %%% Implementation
 % main datastructure: [Size:X/Y, Turn, Orientation:X/Y, State, Tiles:[List of all tiles]]
@@ -32,6 +35,7 @@ get_orientation([_, _, X/Y, _, _], X, Y).
 set_orientation([A, B, _, C, D], X, Y, [A, B, X/Y, C, D]).
 
 % For the state of the game (undecided/Won by player1/2)
+%% The state is between -9 and 9 for a draw game (to allow heuristics), 10 for a game won by player 1 and -10 for a game won by player 2
 get_state([_, _, _, State, _], State).
 set_state([A, B, C, _, D], State, [A, B, C, State, D]).
 
@@ -41,12 +45,19 @@ set_tiles([A, B, C, D, _], Tiles, [A, B, C, D, Tiles]).
 %% And extra to add a tile to the list
 add_tile([A, B, C, D, Tiles], New_tile, [A, B, C, D, [New_tile|Tiles]]).
 
+determine_state_string(_, _, 0, "undecided").
+determine_state_string(Ori, _, State, State_string):-
+    State < 0, string_concat("won by ", Ori, State_string).
+determine_state_string(_, Ori, State, State_string):-
+    State > 0, string_concat("won by ", Ori, State_string).
+
 % Used for printing the state
 print_data([SizeX/SizeY, Turn, OriX/OriY, State, Tiles]) :-
+    determine_state_string(OriX, OriY, State, State_string),
     length(Tiles, L),
     write("tiles: "), write(L), write("\n"),
     maplist(print_tile, Tiles),
-    write("state: "), write(State), write("\n"),
+    write("state: "), write(State_string), write("\n"),
     write("orientation: "), write(OriX), write(" * "), write(OriY), write("\n"),
     write("size: "), write(SizeX), write(" * "), write(SizeY), write("\n"),
     write("turn: "), write(Turn), write("\n").

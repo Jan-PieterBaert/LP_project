@@ -11,10 +11,10 @@
 
 % Generate the extra coords for the fields outside the border, where the color starts, this is used by get_new_coords
 % Below are the vertical and horizontal implementations
-generate_coords_0(-1, _, []) :-!.
-generate_coords_0(X, Y, [X/Y|Coords]) :-
+generate_coords_min_1(-1, _, []) :-!.
+generate_coords_min_1(X, Y, [X/Y|Coords]) :-
     X1 is X-1,
-    generate_coords_0(X1, Y, Coords).
+    generate_coords_min_1(X1, Y, Coords).
 generate_coords_1(_, -1, []) :-!.
 generate_coords_1(X, Y, [X/Y|Coords]) :-
     Y1 is Y-1,
@@ -24,10 +24,10 @@ generate_coords_1(X, Y, [X/Y|Coords]) :-
 % Get the extra coords for the fields outside the border, where the color starts
 %   This means the top and bottom for the first player
 %   Or left and right for the second player
-get_new_coords(Data, 0, New_coords) :-
+get_new_coords(Data, -1, New_coords) :-
     get_size(Data, Max_X, Max_Y),
-    generate_coords_0(Max_X, -1   , New_coords1),
-    generate_coords_0(Max_X, Max_Y, New_coords2),
+    generate_coords_min_1(Max_X, -1   , New_coords1),
+    generate_coords_min_1(Max_X, Max_Y, New_coords2),
     append(New_coords1, New_coords2, New_coords).
 get_new_coords(Data, 1, New_coords) :-
     get_size(Data, Max_X, Max_Y),
@@ -36,8 +36,8 @@ get_new_coords(Data, 1, New_coords) :-
     append(New_coords1, New_coords2, New_coords).
 
 
-% Get the direction of the board this is 0 or 1 (the first or second player respectively)
-state_direction(Data, Turn, 0) :-
+% Get the direction of the board this is -1 or 1 (the first or second player respectively)
+state_direction(Data, Turn, -1) :-
     get_orientation(Data, Turn, _).
 state_direction(Data, Turn, 1) :-
     get_orientation(Data, _, Turn).
@@ -85,8 +85,9 @@ filter_tiles_to_coords([_|Tiles], Turn, Coords) :-
     filter_tiles_to_coords(Tiles, Turn, Coords).
 
 
+
 % Check if the board is won by the player currently in turn
-check_win([C|Coords], Data, Turn, New_data) :-
+check_win([C|Coords], Data, Turn, New_data, Direction) :-
     % Check floadfill
     write_debug([
     "\n_data:", Data, "\n",
@@ -95,12 +96,13 @@ check_win([C|Coords], Data, Turn, New_data) :-
     "Coords:", [C|Coords], "\n"
     ]),
     floodfill([C], Coords),
-    string_concat("won by ", Turn, New_state),
+    % string_concat("won by ", Turn, New_state),
+    New_state is Direction * 10,
     set_state(Data, New_state, New_data),
     write_debug(["Game won by ", Turn, "\n"]),
     !.
 % else
-check_win(_, Data, Turn, Data) :-
+check_win(_, Data, Turn, Data, _) :-
     write_debug(["Game not won by ", Turn, "\n"]).
 
 floodfill(_, []) :- !.
@@ -119,12 +121,12 @@ floodfill([Todo|Todos], Coords) :-
 
 % Generate the new states from a list of options and the current state
 % generate_states(A, [X/Y|B], _) :- write("Genstates:"), write(B), write(X/Y), write("\n").
-generate_states(_, _, [], _, []).
-generate_states(Data, Turn, [X/Y|Options], Coords, [New_state|States]) :-
+generate_states(_, _, [], _, [], _).
+generate_states(Data, Turn, [X/Y|Options], Coords, [New_state|States], Direction) :-
     new_tile(Tile, X, Y, Turn),
     add_tile(Data, Tile, State),
-    check_win([X/Y|Coords], State, Turn, New_state),
-    generate_states(Data, Turn, Options, Coords, States).
+    check_win([X/Y|Coords], State, Turn, New_state, Direction),
+    generate_states(Data, Turn, Options, Coords, States, Direction).
 
 % Get all possible next states
 get_all_states(Data, States) :-
@@ -143,11 +145,13 @@ get_all_states(Data, States) :-
     set_turn(Data, New_turn, New_data),
     filter_tiles_to_coords(Tiles, Turn, Check_winCoords1),
     append(New_coords, Check_winCoords1, Check_winCoords),
-    generate_states(New_data, Turn, Sorted_options, Check_winCoords, States).
+    generate_states(New_data, Turn, Sorted_options, Check_winCoords, States, Direction).
 
+% Check if the list of states contains a winning state and ifso return that state.
 has_win_state([Win_state|_], Win_state) :-
     get_state(Win_state, Win),
-    string_concat("won by", _, Win),
+    win_options(Win_options),
+    member(Win, Win_options),
     !.
 has_win_state([_|States], Win_state) :-
     has_win_state(States, Win_state).

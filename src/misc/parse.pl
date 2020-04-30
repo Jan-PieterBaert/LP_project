@@ -42,9 +42,9 @@ gram([Size, Turn, Ori, State, Tiles], B1, B2, B3, B4, 0) -->
 gram(Data) -->
     gram(Data, 0, 0, 0, 0, 0).
 
-parse_state(State) -->
+parse_state(0) -->
     "state:", whites,
-    words(State), whites, "\n".
+    words(_), whites, "\n".
 
 parse_turn(Turn) -->
     "turn:", whites,
