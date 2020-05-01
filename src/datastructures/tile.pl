@@ -33,7 +33,8 @@ get_neigh_coords(Coord, [_|All_coords], Neighs) :-
 get_neigh_coords_from_list([], _, []).
 get_neigh_coords_from_list([Coord|Coords], All_coords, Neighs) :-
     get_neigh_coords(Coord, All_coords, Result1),
-    get_neigh_coords_from_list(Coords, All_coords, Result2),
+    remove_elements(All_coords, Result1, New_all_coords),
+    get_neigh_coords_from_list(Coords, New_all_coords, Result2),
     append(Result1, Result2, Neighs).
 
 print_tile([X/Y, Color]) :-
