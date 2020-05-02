@@ -1,6 +1,6 @@
 % Module which has all functions to get/set elements of the main con-tac-tic data structure
 :- module(ctt, [
-                win_options/1,
+                win_value/1,win_options/1,
                 new_data/1, new_data/6,
                 get_size/3, set_size/4,
                 get_turn/2, set_turn/3,
@@ -13,7 +13,8 @@
 :- use_module(tile).
 
 % The possible states which indicate a win
-win_options([-10,10]).
+win_value(100).
+win_options([A,B]) :- win_value(B), A is -B.
 
 %%% Implementation
 % main datastructure: [Size:X/Y, Turn, Orientation:X/Y, State, Tiles:[List of all tiles]]
@@ -47,9 +48,11 @@ add_tile(board(A, B, C, D, Tiles), New_tile, board(A, B, C, D, [New_tile|Tiles])
 
 determine_state_string(_, _, 0, "undecided").
 determine_state_string(Ori, _, State, State_string):-
-    State =< -10, string_concat("won by ", Ori, State_string).
+    win_options([A,_]),
+    State =< A, string_concat("won by ", Ori, State_string).
 determine_state_string(_, Ori, State, State_string):-
-    State >=  10, string_concat("won by ", Ori, State_string).
+    win_options([_,A]),
+    State >= A, string_concat("won by ", Ori, State_string).
 
 % Used for printing the state
 print_data(board(SizeX/SizeY, Turn, OriX/OriY, State, Tiles)) :-

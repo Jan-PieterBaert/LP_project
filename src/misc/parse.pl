@@ -80,8 +80,7 @@ parse_one_tile((Coord, Color)) --> whites,
     word(Color), whites, "\n".
 
 
-parse_tile_list([Tile|[]], 1) -->
-    whites, parse_one_tile(Tile).
+parse_tile_list([], 0) --> !.
 parse_tile_list([Tile|Tiles], N) -->
     whites, parse_one_tile(Tile),
     { N1 is N-1 },

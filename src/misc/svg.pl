@@ -70,9 +70,9 @@ print_row(-1).
 print_row(X) :-
     X1 is X - 1,
     print_row(X1),
-    char_code("A", A), N is X+A, atom_codes(L, [N]),
+    char_code("A", A), N is X+A, char_code(L, N),
     writef("<text class=\"row_or_col\" y=\"-0.65\" x=\"%w\">%w</text>\n", [X,L]).
-print_col(0).
+print_col(Y).
 print_col(Y) :-
     Y1 is Y - 1,
     print_col(Y1),

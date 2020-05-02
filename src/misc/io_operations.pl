@@ -20,8 +20,8 @@ exit_with_code_and_message(Code, Error_message) :-
 
 
 % When the following line is commented, debug statements will be printed
-write_debug(_) :- !.
+write_debug(_).
 
-write_debug([]).
-write_debug([H|T]) :-
-    write(H), write_debug(T).
+% write_debug([]).
+% write_debug([H|T]) :-
+%     write(H), write_debug(T).
