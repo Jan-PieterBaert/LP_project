@@ -9,12 +9,16 @@
     ]).
 
 % tile datastructure: [Coord: X/Y, Color]
-new_tile([X/Y, Color], X, Y, Color).
-get_tile_coord([X/Y, _], X, Y).
-set_tile_coord([_, C], X, Y, [X/Y, C]).
+new_tile(tile(X/Y, Color), X, Y, Color).
+get_tile_coord(tile(X/Y, _), X, Y).
+set_tile_coord(tile(_, C), X, Y, tile(X/Y, C)).
 
-get_tile_color([_, Color], Color).
-set_tile_color([C, _], New_color, [C, New_color]).
+get_tile_color(tile(_, Color), Color).
+set_tile_color(tile(C, _), New_color, tile(C, New_color)).
+
+print_tile(tile(X/Y, Color)) :-
+    char_code("A", A), N is X+A, char_code(L, N), Y1 is Y+1,
+    write("    ("), write(L), write(Y1), write(") -> "), write(Color), write("\n").
 
 get_neigh_coords(_, [], []).
 get_neigh_coords(Coord, [Test_coord|All_coords], [Test_coord|Neighs]) :-
@@ -36,10 +40,6 @@ get_neigh_coords_from_list([Coord|Coords], All_coords, Neighs) :-
     remove_elements(All_coords, Result1, New_all_coords),
     get_neigh_coords_from_list(Coords, New_all_coords, Result2),
     append(Result1, Result2, Neighs).
-
-print_tile([X/Y, Color]) :-
-    char_code("A", A), N is X+A, char_code(L, N), Y1 is Y+1,
-    write("    ("), write(L), write(Y1), write(") -> "), write(Color), write("\n").
 
 :- begin_tests(tile).
 test(coord) :-

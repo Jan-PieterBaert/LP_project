@@ -18,32 +18,32 @@ win_options([-10,10]).
 %%% Implementation
 % main datastructure: [Size:X/Y, Turn, Orientation:X/Y, State, Tiles:[List of all tiles]]
 % Function to give a new data, this can be either empty (the first line) or filled with given values
-new_data([0/0, "", 0/0, "", []]).
-new_data([SizeX/SizeY, Turn, OriX/OriY, State, Tiles], (SizeX, SizeY), Turn, (OriX, OriY), State, Tiles).
+new_data(board(0/0, "", 0/0, "", [])).
+new_data(board(SizeX/SizeY, Turn, OriX/OriY, State, Tiles), (SizeX, SizeY), Turn, (OriX, OriY), State, Tiles).
 
 %% Definitions of getter and setters on the data
 % For the size (Horizontal/Vertical)
-get_size([X/Y, _, _, _, _], X, Y).
-set_size([_, A, B, C, D], X, Y, [X/Y, A, B, C, D]).
+get_size(board(X/Y, _, _, _, _), X, Y).
+set_size(board(_, A, B, C, D), X, Y, board(X/Y, A, B, C, D)).
 
 % For the turn
-get_turn([_, Turn, _, _, _], Turn).
-set_turn([A, _, B, C, D], Turn, [A, Turn, B, C, D]).
+get_turn(board(_, Turn, _, _, _), Turn).
+set_turn(board(A, _, B, C, D), Turn, board(A, Turn, B, C, D)).
 
 % For the orientation (the Horizontal/Vertical player)
-get_orientation([_, _, X/Y, _, _], X, Y).
-set_orientation([A, B, _, C, D], X, Y, [A, B, X/Y, C, D]).
+get_orientation(board(_, _, X/Y, _, _), X, Y).
+set_orientation(board(A, B, _, C, D), X, Y, board(A, B, X/Y, C, D)).
 
 % For the state of the game (undecided/Won by player1/2)
 %% The state is between -9 and 9 for a draw game (to allow heuristics), 10 for a game won by player 1 and -10 for a game won by player 2
-get_state([_, _, _, State, _], State).
-set_state([A, B, C, _, D], State, [A, B, C, State, D]).
+get_state(board(_, _, _, State, _), State).
+set_state(board(A, B, C, _, D), State, board(A, B, C, State, D)).
 
 % For the tiles
-get_tiles([_, _, _, _, Tiles], Tiles).
-set_tiles([A, B, C, D, _], Tiles, [A, B, C, D, Tiles]).
+get_tiles(board(_, _, _, _, Tiles), Tiles).
+set_tiles(board(A, B, C, D, _), Tiles, board(A, B, C, D, Tiles)).
 %% And extra to add a tile to the list
-add_tile([A, B, C, D, Tiles], New_tile, [A, B, C, D, [New_tile|Tiles]]).
+add_tile(board(A, B, C, D, Tiles), New_tile, board(A, B, C, D, [New_tile|Tiles])).
 
 determine_state_string(_, _, 0, "undecided").
 determine_state_string(Ori, _, State, State_string):-
@@ -52,7 +52,7 @@ determine_state_string(_, Ori, State, State_string):-
     State >=  10, string_concat("won by ", Ori, State_string).
 
 % Used for printing the state
-print_data([SizeX/SizeY, Turn, OriX/OriY, State, Tiles]) :-
+print_data(board(SizeX/SizeY, Turn, OriX/OriY, State, Tiles)) :-
     determine_state_string(OriX, OriY, State, State_string),
     length(Tiles, L),
     write("tiles: "), write(L), write("\n"),
