@@ -157,21 +157,63 @@ get_all_states(Data, States) :-
 
 % Check if the list of states contains a winning state and ifso return that state.
 has_win_state([Win_state|_], Win_state) :-
-    get_state(Win_state, Win),
-    win_options(Win_options),
-    member(Win, Win_options),
-    !.
-
+    is_win_state(Win_state),!.
 has_win_state([_|States], Win_state) :-
     has_win_state(States, Win_state).
 
+is_win_state(State) :-
+    get_state(State, Win),
+    win_options(Win_options),
+    member(Win, Win_options).
 
-% Get the best possible next board, if there's a winning board, return that board
-get_best_state(Data, Win_state) :-
-    get_all_states(Data, States),
-    has_win_state(States, Win_state),
-    !.
 
-get_best_state(Data, State) :-
+stop_depth(0).
+
+min(State, _, Val, Depth, State) :-
+    Depth > 0,
+    is_win_state(State),!,
+    write_debug(["Found winning state", State, "\n"]),
+    get_state(State, Val).
+min(State, Lowest_possible, Val, Depth, Best_state) :-
+    stop_depth(Depth),
+    write_debug(["Depth is: ", Depth, "|", Stop, "\n"]),
+    write_debug(["At max depth, returning min state\n"]),
+    get_all_states(State, [New_state|New_states]),
+    get_minimal_state_from_list(New_states, New_state, Best_state).
+
+get_minimal_state_from_list([], Cur_state, Cur_state).
+get_minimal_state_from_list([State|States], Cur_state, Best_state) :-
+    get_state(State, Val), get_state(Cur_state, Cur_val),
+    Val < Cur_val,
+    get_minimal_state_from_list(States, State, Best_state), !.
+get_minimal_state_from_list([_|States], State, Best_state) :-
+    get_minimal_state_from_list(States, State, Best_state).
+
+max(State, _, Val, Depth, State) :-
+    Depth > 0,
+    is_win_state(State),!,
+    write_debug(["Found winning state", State, "\n"]),
+    get_state(State, Val).
+max(State, Lowest_possible, Val, Depth, Best_state) :-
+    stop_depth(Depth),
+    write_debug(["Depth is: ", Depth, "|", Stop, "\n"]),
+    write_debug(["At max depth, returning max state\n"]),
+    get_all_states(State, [New_state|New_states]),
+    get_maximal_state_from_list(New_states, New_state, Best_state).
+
+get_maximal_state_from_list([], Cur_state, Cur_state).
+get_maximal_state_from_list([State|States], Cur_state, Best_state) :-
+    get_state(State, Val), get_state(Cur_state, Cur_val),
+    Val > Cur_val,
+    get_maximal_state_from_list(States, State, Best_state), !.
+get_maximal_state_from_list([_|States], State, Best_state) :-
+    get_maximal_state_from_list(States, State, Best_state).
+
+
+get_best_state(Data, Best_state) :-
     % Currently just return the first possible state if no win is possible
-    get_all_states(Data, [State|_]).
+    get_turn(Data, Turn),
+    state_direction(Data, Turn, -1),
+    min(Data, 0, 0, 0, Best_state);
+    state_direction(Data, Turn, 1),
+    max(Data, 0, 0, 0, Best_state).

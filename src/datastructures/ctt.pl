@@ -47,9 +47,9 @@ add_tile([A, B, C, D, Tiles], New_tile, [A, B, C, D, [New_tile|Tiles]]).
 
 determine_state_string(_, _, 0, "undecided").
 determine_state_string(Ori, _, State, State_string):-
-    State < 0, string_concat("won by ", Ori, State_string).
+    State =< -10, string_concat("won by ", Ori, State_string).
 determine_state_string(_, Ori, State, State_string):-
-    State > 0, string_concat("won by ", Ori, State_string).
+    State >=  10, string_concat("won by ", Ori, State_string).
 
 % Used for printing the state
 print_data([SizeX/SizeY, Turn, OriX/OriY, State, Tiles]) :-
