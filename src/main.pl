@@ -1,3 +1,4 @@
+:- use_module(library(statistics)).
 :- use_module(datastructures/ctt).
 :- use_module(datastructures/tile).
 :- use_module(misc/list_operations).
@@ -67,5 +68,5 @@ main(Args) :-
     new_data(Data, Size, Turn, Ori, State, New_tiles),
     check_data(Data),
     get_new_states(Data, Args, States),
-    print_states(States, Args),
-    !.
+    print_states(States, Args).
+    % statistics.

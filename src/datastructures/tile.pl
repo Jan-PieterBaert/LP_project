@@ -7,6 +7,7 @@
                 get_neigh_coords/3, get_neigh_coords_from_list/3,
                 print_tile/1
     ]).
+:- table get_neigh_coords/2.
 
 % tile datastructure: [Coord: X/Y, Color]
 new_tile(tile(X/Y, Color), X, Y, Color).
@@ -20,19 +21,27 @@ print_tile(tile(X/Y, Color)) :-
     char_code("A", A), N is X+A, char_code(L, N), Y1 is Y+1,
     write("    ("), write(L), write(Y1), write(") -> "), write(Color), write("\n").
 
-get_neigh_coords(_, [], []).
-get_neigh_coords(Coord, [Test_coord|All_coords], [Test_coord|Neighs]) :-
-    Coord = X/Y,
+is_neigh_coord(X/Y, Test_coord) :-
     Minus_one_X is X - 1,
     Plus_one_X  is X + 1,
     Minus_one_Y is Y - 1,
     Plus_one_Y  is Y + 1,
-    member(Test_coord, [Minus_one_X/Y, Minus_one_X/Plus_one_Y, X/Minus_one_Y, Plus_one_X/Minus_one_Y, Plus_one_X/Y, X/Plus_one_Y]),
+    member(Test_coord, [Minus_one_X/Y, Minus_one_X/Plus_one_Y, X/Minus_one_Y, Plus_one_X/Minus_one_Y, Plus_one_X/Y, X/Plus_one_Y]).
+
+% get_neigh_coords(Coord, All_coords, Neighs) :-
+%     findall(C, (member(C, All_coords), is_neigh_coord(Coord, C)), Neighs).
+
+get_neigh_coords(_, [], []).
+get_neigh_coords(Coord, [Test_coord|All_coords], [Test_coord|Neighs]) :-
+    is_neigh_coord(Coord, Test_coord),
     get_neigh_coords(Coord, All_coords, Neighs),
     !.
 
 get_neigh_coords(Coord, [_|All_coords], Neighs) :-
     get_neigh_coords(Coord, All_coords, Neighs).
+
+% get_neigh_coords_from_list(Coords, All_coords, Neighs) :-
+%     setof(N, (member(C, Coords), is_neigh_coord(C, N), member(N, All_coords)), Neighs).
 
 get_neigh_coords_from_list([], _, []).
 get_neigh_coords_from_list([Coord|Coords], All_coords, Neighs) :-
