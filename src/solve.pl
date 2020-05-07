@@ -11,34 +11,17 @@
 
 % For memoization of certain functions
 % TODO: add timings about this in the report!
-:- use_module(library(tabling)).
 :- table floodfill/2.
 :- table get_states/2.
-
-
-% Generate the extra coords for the fields outside the border, where the color starts, this is used by get_extra_border_coords
-% Below are the vertical and horizontal implementations
-generate_coords_min_1(-1, _, []) :-!.
-generate_coords_min_1(X, Y, [X/Y|Coords]) :-
-    X1 is X-1,
-    generate_coords_min_1(X1, Y, Coords).
-generate_coords_max_1(_, -1, []) :-!.
-generate_coords_max_1(X, Y, [X/Y|Coords]) :-
-    Y1 is Y-1,
-    generate_coords_max_1(X, Y1, Coords).
 
 
 % Get the extra coords for the fields outside the border, where the color starts
 %   This means the top and bottom for the first player
 %   Or left and right for the second player
 get_extra_border_coords(Max_X/Max_Y, -1, New_coords) :-
-    generate_coords_min_1(Max_X, -1   , New_coords1),
-    generate_coords_min_1(Max_X, Max_Y, New_coords2),
-    append(New_coords1, New_coords2, New_coords).
+    findall(X/Y, (between(0,Max_X,X), Y is -1; between(0,Max_X,X), Y is Max_Y), New_coords).
 get_extra_border_coords(Max_X/Max_Y, 1, New_coords) :-
-    generate_coords_max_1(-1   , Max_Y, New_coords1),
-    generate_coords_max_1(Max_X, Max_Y, New_coords2),
-    append(New_coords1, New_coords2, New_coords).
+    findall(X/Y, (between(0,Max_Y,Y), X is -1; between(0,Max_Y,Y), X is Max_X), New_coords).
 
 
 % Get the direction of the board this is -1 or 1 (the first or second player respectively)
@@ -199,7 +182,7 @@ get_minimal_state_from_list([_|States], State, Best_state) :-
     get_minimal_state_from_list(States, State, Best_state).
 
 get_minimal_state_from_map([], Val, State, Val, _, State).
-get_minimal_state_from_map([State|States], Cur_val, Best_state, Val, Depth, Cur_best) :-
+get_minimal_state_from_map([State|States], Cur_val, Best_state, Val, Depth, _) :-
     max(State, New_val, Depth, _),
     New_val < Cur_val, !,
     get_minimal_state_from_map(States, New_val, Best_state, Val, Depth, State).
@@ -241,7 +224,7 @@ get_maximal_state_from_list([_|States], State, Best_state) :-
     get_maximal_state_from_list(States, State, Best_state).
 
 get_maximal_state_from_map([], Val, State, Val, _, State).
-get_maximal_state_from_map([State|States], Cur_val, Best_state, Val, Depth, Cur_best) :-
+get_maximal_state_from_map([State|States], Cur_val, Best_state, Val, Depth, _) :-
     min(State, New_val, Depth, _),
     New_val > Cur_val, !,
     get_maximal_state_from_map(States, New_val, Best_state, Val, Depth, State).
