@@ -130,7 +130,6 @@ get_all_states(Data, States) :-
 
 % Check if the list of states contains a winning state and ifso return that state.
 has_win_state([Win_state|_], Win_state) :-
-    % write("WE HAVE A WINNER\n"),
     is_win_state(Win_state),!.
 has_win_state([_|States], Win_state) :-
     has_win_state(States, Win_state).
@@ -148,7 +147,6 @@ min(State, Val, Depth, Win_state) :-
     has_win_state(States, Win_state),!,
     get_state(Win_state, V),
     % A direct win is a better job than a far away win
-    % Val is V/Depth,
     Val is V,
     write_debug(["Found min winning state: ", Win_state, " on depth: ", Depth, " with value: ", Val, "\n"]).
 min(State, Val, Depth, Best_state) :-

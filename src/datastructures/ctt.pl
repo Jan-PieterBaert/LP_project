@@ -44,7 +44,7 @@ set_state(board(A, B, C, _, D), State, board(A, B, C, State, D)).
 get_tiles(board(_, _, _, _, Tiles), Tiles).
 set_tiles(board(A, B, C, D, _), Tiles, board(A, B, C, D, Tiles)).
 %% And extra to add a tile to the list
-add_tile(board(A, B, C, D, Tiles), New_tile, board(A, B, C, D, [New_tile|Tiles])).
+add_tile(board(A, B, C, D, Tiles), New_tile, board(A, B, C, D, New_tiles)) :- sort([New_tile|Tiles], New_tiles).
 
 determine_state_string(_, _, 0, "undecided").
 determine_state_string(Ori, _, State, State_string):-
