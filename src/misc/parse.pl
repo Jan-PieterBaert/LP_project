@@ -42,51 +42,57 @@ gram([Size, Turn, Ori, State, Tiles], B1, B2, B3, B4, 0) -->
 gram(Data) -->
     gram(Data, 0, 0, 0, 0, 0).
 
+% Parse the state, we can ignore the contents after `state:` the value is always 0 (undecided game)
 parse_state(0) -->
     "state:", whites,
     words(_), whites, "\n".
 
+% Parse the turn and return the word after `turn:`
 parse_turn(Turn) -->
     "turn:", whites,
     word(Turn), whites, "\n".
 
+% Parse the dimentions of the game and return it as a tuple
 parse_size((X, Y)) -->
     "size:", whites,
     integer(X), whites,
     "*", whites,
     integer(Y), whites, "\n".
 
+% Parse the orientation (i.e. player 1/2) of the game and return it as a tuple
 parse_orientation((C1, C2)) -->
     "orientation:", whites,
     word(C1), whites,
     "*", whites,
     word(C2), whites, "\n".
 
+% Parse the tile header (i.e. the number of tiles) and return the number of tiles
 parse_tile_header(Number_Of_Tiles) -->
     "tiles:", whites,
     integer(Number_Of_Tiles), "\n".
+% Parse all tiles
 parse_tiles(Tiles) -->
     parse_tile_header(Number_Of_Tiles),
     parse_tile_list(Tiles, Number_Of_Tiles).
 
+% Parse the coordinate of a tile (and convert it to two numbers)
 parse_tile_coord((L, D1)) -->
     "(", nonblank(C1),
     integer(D), ")",
     {D1 is D-1, char_code("A", C2), L is C1-C2, L >= 0, L < 26 }.
 
+% Parse one tile and return the coordinate and color
 parse_one_tile((Coord, Color)) --> whites,
-    parse_tile_coord(Coord), whites,
+    whites, parse_tile_coord(Coord), whites,
     "->", whites,
     word(Color), whites, "\n".
 
-
+% Parse a list of tiles with a preset length
 parse_tile_list([], 0) --> !.
 parse_tile_list([Tile|Tiles], N) -->
     whites, parse_one_tile(Tile),
     { N1 is N-1 },
     parse_tile_list(Tiles, N1).
-
-parse_size(Size1, Size2) --> "size", integer(Size1), "*", integer(Size2), "\n".
 
 word(Word) --> nonblanks(W), {atom_codes(Word, W)}.
 words(Word) --> string(W), {atom_codes(Word, W)}.

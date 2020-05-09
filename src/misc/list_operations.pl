@@ -11,7 +11,7 @@ generate_to_from(X, Y, [X|Retval]) :-
     generate_to_from(X1, Y, Retval).
 
 % Remove the elements of L that are in [H|T]
+remove_elements(L, [], L).
 remove_elements(L, [H|T], R) :-
     delete(L, H, R1),
     remove_elements(R1, T, R).
-remove_elements(L, [], L).

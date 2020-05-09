@@ -1,7 +1,7 @@
 % Module which has all functions to get/set elements of the main con-tac-tic data structure
 :- module(ctt, [
                 win_value/1,win_options/1,
-                new_data/1, new_data/6,
+                new_board/1, new_board/6,
                 get_size/3, set_size/4,
                 get_turn/2, set_turn/3,
                 get_orientation/3, set_orientation/4,
@@ -19,8 +19,8 @@ win_options([A,B]) :- win_value(B), A is -B.
 %%% Implementation
 % main datastructure: [Size:X/Y, Turn, Orientation:X/Y, State, Tiles:[List of all tiles]]
 % Function to give a new data, this can be either empty (the first line) or filled with given values
-new_data(board(0/0, "", 0/0, "", [])).
-new_data(board(SizeX/SizeY, Turn, OriX/OriY, State, Tiles), (SizeX, SizeY), Turn, (OriX, OriY), State, Tiles).
+new_board(board(0/0, "", 0/0, "", [])).
+new_board(board(SizeX/SizeY, Turn, OriX/OriY, State, Tiles), (SizeX, SizeY), Turn, (OriX, OriY), State, Tiles).
 
 %% Definitions of getter and setters on the data
 % For the size (Horizontal/Vertical)
@@ -46,13 +46,14 @@ set_tiles(board(A, B, C, D, _), Tiles, board(A, B, C, D, Tiles)).
 %% And extra to add a tile to the list
 add_tile(board(A, B, C, D, Tiles), New_tile, board(A, B, C, D, New_tiles)) :- sort([New_tile|Tiles], New_tiles).
 
-determine_state_string(_, _, 0, "undecided").
+% Determine the string of the state, this is won by player 1/2 with default being "undecided"
 determine_state_string(Ori, _, State, State_string):-
     win_options([A,_]),
     State =< A, string_concat("won by ", Ori, State_string).
 determine_state_string(_, Ori, State, State_string):-
     win_options([_,A]),
     State >= A, string_concat("won by ", Ori, State_string).
+determine_state_string(_, _, _, "undecided").
 
 % Used for printing the state
 print_data(board(SizeX/SizeY, Turn, OriX/OriY, State, Tiles)) :-
@@ -68,7 +69,8 @@ print_data(board(SizeX/SizeY, Turn, OriX/OriY, State, Tiles)) :-
 %%% Tests for con-tac-tic datastructure
 :- begin_tests(ctt_data).
 test(size) :-
-    new_data(Data),
+    % Check the get/set size
+    new_board(Data),
     set_size(Data, 10, 20, New_data),
     get_size(New_data, X, Y),
     assertion(X == 10),
@@ -76,14 +78,16 @@ test(size) :-
     !.
 
 test(turn) :-
-    new_data(Data),
+    % Check the get/set turn
+    new_board(Data),
     set_turn(Data, "Testturn", New_data),
     get_turn(New_data, Turn),
     assertion(Turn == "Testturn"),
     !.
 
 test(orientation) :-
-    new_data(Data),
+    % Check the get/set orientation
+    new_board(Data),
     set_orientation(Data, 10, 20, New_data),
     get_orientation(New_data, X, Y),
     assertion(X == 10),
@@ -91,14 +95,16 @@ test(orientation) :-
     !.
 
 test(state) :-
-    new_data(Data),
+    % Check the get/set state
+    new_board(Data),
     set_state(Data, "Teststate", New_data),
     get_state(New_data, State),
     assertion(State == "Teststate"),
     !.
 
 test(tiles) :-
-    new_data(Data0),
+    % Check the get/set/add tiles functions
+    new_board(Data0),
     new_tile(T1, 0, 0, ""),
     new_tile(T2, 1, 1, ""),
     new_tile(T3, 2, 2, ""),
@@ -107,7 +113,7 @@ test(tiles) :-
     assertion(Tiles1 == [T1, T2]),
     add_tile(Data1, T3, Data2),
     get_tiles(Data2, Tiles2),
-    assertion(Tiles2 == [T3, T1, T2]),
+    assertion(Tiles2 == [T1, T2, T3]),
     !.
 
 :- end_tests(ctt_data).

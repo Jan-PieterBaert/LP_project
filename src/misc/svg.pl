@@ -25,7 +25,7 @@ print_svg(State) :-
     print_col(Y),
 
     % Fill in all the coordinates with empty tiles
-    get_all_coords_in_bound(State, Coords),
+    get_all_coords_in_bound(X/Y, Coords),
     maplist(print_empty_tile, Coords),
 
     % And overwrite this with filled tiles when necessary
@@ -66,13 +66,14 @@ print_translate() :-
         <g transform=\"matrix(1.73205080756 0 0.86602540378 1.5 3.46410161512 2.5)\"><g>
         ").
 
-print_row(-1).
+
+print_row(0) :- !.
 print_row(X) :-
     X1 is X - 1,
     print_row(X1),
-    char_code("A", A), N is X+A, char_code(L, N),
-    writef("<text class=\"row_or_col\" y=\"-0.65\" x=\"%w\">%w</text>\n", [X,L]).
-print_col(Y).
+    char_code("A", A), N is X1+A, char_code(L, N),
+    writef("<text class=\"row_or_col\" y=\"-0.65\" x=\"%w\">%w</text>\n", [X1,L]).
+print_col(0) :- !.
 print_col(Y) :-
     Y1 is Y - 1,
     print_col(Y1),

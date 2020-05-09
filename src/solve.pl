@@ -1,6 +1,6 @@
 :- module(solve, [
-        get_all_states/2,
-        get_best_state/2,
+        get_all_boards/2,
+        get_best_board/2,
 
         % Below functions is to be able to use it in the printing of svg's
         get_all_coords_in_bound/2
@@ -13,7 +13,8 @@
 % TODO: add timings about this in the report!
 :- table floodfill/2.
 :- table get_states/2.
-% :- table get_extra_border_coords/3.
+:- table get_all_coords_in_bound/2.
+:- table get_extra_border_coords/3.
 
 
 % Get the extra coords for the fields outside the border, where the color starts
@@ -100,7 +101,7 @@ generate_states(Data, Turn, Options, Coords, States, Direction) :-
 
 
 % Get all possible next states
-get_all_states(Data, States) :-
+get_all_boards(Data, States) :-
     % Get the player currently at turn and it's direction
     get_turn(Data, Turn),
     state_direction(Data, Turn, Direction),
@@ -143,7 +144,7 @@ is_win_state(State) :-
 stop_depth(3).
 
 min(State, Val, Depth, Win_state) :-
-    get_all_states(State, States),
+    get_all_boards(State, States),
     has_win_state(States, Win_state),!,
     get_state(Win_state, V),
     % A direct win is a better job than a far away win
@@ -153,14 +154,14 @@ min(State, Val, Depth, Best_state) :-
     stop_depth(Depth),!,
     write_debug(["(-)Depth is: ", Depth, "\n"]),
     write_debug(["At max depth, returning min state\n"]),
-    get_all_states(State, [New_state|New_states]),
+    get_all_boards(State, [New_state|New_states]),
     get_minimal_state_from_list(New_states, New_state, Best_state, 0),
     get_state(Best_state, Val),
     write_debug(["We found minimal state: ", Best_state, " with value: ", Val, "\n\n"]).
 min(State, Val, Depth, Best_state) :-
     write_debug(["(-) Depth is: ", Depth, "\n"]),
     New_depth is Depth + 1,
-    get_all_states(State, [New_state|New_states]),
+    get_all_boards(State, [New_state|New_states]),
     max(New_state, Val1, New_depth, _),
     get_minimal_state_from_map(New_states, Val1, Best_state, Val, New_depth, New_state),
     write_debug(["We found minimal state: ", Best_state, "\n"]).
@@ -185,7 +186,7 @@ get_minimal_state_from_map([_|States], Cur_val, Best_state, Val, Depth, Cur_best
 
 
 max(State, Val, Depth, Win_state) :-
-    get_all_states(State, States),
+    get_all_boards(State, States),
     has_win_state(States, Win_state),!,
     get_state(Win_state, Val),
     % A direct win is a better job than a far away win
@@ -194,14 +195,14 @@ max(State, Val, Depth, Best_state) :-
     stop_depth(Depth),!,
     write_debug(["(+) Depth is: ", Depth, "\n"]),
     write_debug(["At max depth, returning max state\n"]),
-    get_all_states(State, [New_state|New_states]),
+    get_all_boards(State, [New_state|New_states]),
     get_maximal_state_from_list(New_states, New_state, Best_state, 0),
     get_state(Best_state, Val),
     write_debug(["We found maximal state: ", Best_state, " with value: ", Val, "\n\n"]).
 max(State, Val, Depth, Best_state) :-
     write_debug(["(+) Depth is: ", Depth, "\n"]),
     New_depth is Depth + 1,
-    get_all_states(State, [New_state|New_states]),
+    get_all_boards(State, [New_state|New_states]),
     min(New_state, Val1, New_depth, _),
     get_maximal_state_from_map(New_states, Val1, Best_state, Val, New_depth, New_state),
     write_debug(["We found minimal state: ", Best_state, "\n"]).
@@ -225,14 +226,14 @@ get_maximal_state_from_map([_|States], Cur_val, Best_state, Val, Depth, Cur_best
 
 
 % Currently just return the first possible state if no win is possible
-get_best_state(Data, Best_state) :-
+get_best_board(Data, Best_state) :-
     get_turn(Data, Turn),
     state_direction(Data, Turn, -1),
     min(Data, Val, 1, Best_state),
     write_debug(["The best board is: ", Best_state, "\n"]),
     write_debug(["Best game solution has a value of: ", Val, "\n"]).
 
-get_best_state(Data, Best_state) :-
+get_best_board(Data, Best_state) :-
     get_turn(Data, Turn),
     state_direction(Data, Turn, 1),
     max(Data, Val, 1, Best_state),

@@ -31,42 +31,52 @@ check_data(Data) :-
 check_data(_) :-
     exit_with_code_and_message(3, "Invalid dataset").
 
-fix_tiles([], []).
-fix_tiles([((X, Y), Color)|Tiles], [New_tile|L]) :-
-    new_tile(New_tile, X, Y, Color),
-    fix_tiles(Tiles, L).
+tile_from_data(((X, Y), Color), Tile) :- new_tile(Tile, X, Y, Color).
+fix_tiles(Data, Tiles) :- maplist(tile_from_data, Data, Tiles).
+% fix_tiles([], []).
+% fix_tiles([((X, Y), Color)|Tiles], [New_tile|L]) :-
+%     new_tile(New_tile, X, Y, Color),
+%     fix_tiles(Tiles, L).
 
 % Get the states that should be printed, this is all states in case TEST is in the cli Args, otherwise the best state
-get_new_states(Data, Args, States) :-
+get_new_boards(Data, Args, States) :-
     member('TEST', Args), !,
-    get_all_states(Data, States).
-get_new_states(Data, _, [State]) :-
-    get_best_state(Data, State).
+    get_all_boards(Data, States).
+get_new_boards(Data, _, [State]) :-
+    get_best_board(Data, State).
 
 % Print the states, this is in a SVG manner when SVG is in the cli Args, else just to stdout
-print_states(States, Args) :-
+print_boards(States, Args) :-
     member('SVG', Args), !,
     maplist(print_svg, States).
-print_states(States, _) :-
-    print_states(States).
+print_boards(States, _) :-
+    print_boards(States).
 
 % To normally print states, we print each state in the list of states separated by a line with `~`
-print_states([State]) :-
+print_boards([State]) :-
     print_data(State).
-print_states([State|States]) :-
-    print_data(State), println("~"),
-    print_states(States).
+print_boards([State|States]) :-
+    print_data(State), writeln("~"),
+    print_boards(States).
 
+% Get the arguments from the main and call main/1
 main :-
     current_prolog_flag(argv, Argv),
     sort(Argv, Argv_sorted),
     main(Argv_sorted).
 
+% Execute the main program
 main(Args) :-
-    parse([Size, Turn, Ori, State, Tiles]),
-    fix_tiles(Tiles, New_tiles),
-    new_data(Data, Size, Turn, Ori, State, New_tiles),
-    check_data(Data),
-    get_new_states(Data, Args, States),
-    print_states(States, Args).
+    % Parse the data
+    parse([Size, Turn, Ori, State, Tiles_data]),
+    % Make files from the data
+    fix_tiles(Tiles_data, Tiles),
+    % Create a board from the data
+    new_board(Board, Size, Turn, Ori, State, Tiles),
+    % Check if the board is valid
+    check_data(Board),
+    % Get the new boards (this is all when testing and one when trying to win)
+    get_new_boards(Board, Args, States),
+    % Print the board in a normal or svg fashion
+    print_boards(States, Args).
     % statistics.
