@@ -89,15 +89,15 @@ floodfill([Todo|Todos], Coords) :-
 
 
 % Generate the new states from a list of options and the current state
-generate_states(Data, Turn, Options, Coords, States, Direction) :-
-    findall(New_state,
-                (member(X/Y, Options),
-                    % Add a new tile which is the new option
-                    new_tile(Tile, X, Y, Turn),
-                    add_tile(Data, Tile, State),
-                    % Check the new board if it's won by the current player
-                    check_win([X/Y|Coords], State, New_state, Direction)),
-            States).
+generate_states(_, _, [], _, [], _).
+generate_states(Data, Turn, [X/Y|Options], Coords, [New_state|States], Direction) :-
+    % Add a new tile which is the new option
+    new_tile(Tile, X, Y, Turn),
+    add_tile(Data, Tile, State),
+    % Check the new board if it's won by the current player
+    check_win([X/Y|Coords], State, New_state, Direction),
+    % Generate the states for the remaining options
+    generate_states(Data, Turn, Options, Coords, States, Direction).
 
 
 % Get all possible next states

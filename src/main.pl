@@ -33,10 +33,6 @@ check_data(_) :-
 
 tile_from_data(((X, Y), Color), Tile) :- new_tile(Tile, X, Y, Color).
 fix_tiles(Data, Tiles) :- maplist(tile_from_data, Data, Tiles).
-% fix_tiles([], []).
-% fix_tiles([((X, Y), Color)|Tiles], [New_tile|L]) :-
-%     new_tile(New_tile, X, Y, Color),
-%     fix_tiles(Tiles, L).
 
 % Get the states that should be printed, this is all states in case TEST is in the cli Args, otherwise the best state
 get_new_boards(Data, Args, States) :-
