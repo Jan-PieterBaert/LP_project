@@ -18,9 +18,9 @@ We maken gebruik van min-max bomen die tot een diepte van 4 zoeken naar een winn
 ## Memoization
 Om het effect van memoization te zien voeren we `tests/run_tests.sh` uit en bekijken we hoe lang dit duurt met of zonder memoization per propositie
 
-| Propositie                  | Tijd zonder | Tijd met | Percentage verschil |
-| --------------------------- | ----------- | -------- | ------------------- |
-| `floodfill/2`               | 660s        | 285s     |                     |
-| `get_states/2`              | 350s        | 285s     |                     |
-| `get_all_coords_in_bound/2` | 320s        | 285s     |                     |
-| `get_extra_border_coords/3` | 350s        | 285s     |                     |
+| Propositie            | Tijd zonder | Tijd met | Percentage verschil |
+| --------------------- | ----------- | -------- | ------------------- |
+| `floodfill/2`         | 228s        | 000s     |                     |
+| `get_neight_coords/2` | 228s        | 000s     |                     |
+
+We zien dat ...

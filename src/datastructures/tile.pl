@@ -7,7 +7,7 @@
                 get_neigh_coords/3, get_neigh_coords_from_list/3,
                 print_tile/1
     ]).
-:- table get_neigh_coords/2.
+% :- table is_neight_coord/2.
 
 % tile datastructure: [Coord: X/Y, Color]
 new_tile(tile(X/Y, Color), X, Y, Color).

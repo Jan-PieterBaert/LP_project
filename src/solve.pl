@@ -11,10 +11,7 @@
 
 % For memoization of certain functions
 % TODO: add timings about this in the report!
-:- table floodfill/2.
-:- table get_states/2.
-:- table get_all_coords_in_bound/2.
-:- table get_extra_border_coords/3.
+% :- table floodfill/2.
 
 
 % Get the extra coords for the fields outside the border, where the color starts
@@ -141,27 +138,25 @@ is_win_state(State) :-
     member(Win, Win_options).
 
 
-stop_depth(3).
+stop_depth(2).
 
 min(State, Val, Depth, Win_state) :-
     get_all_boards(State, States),
+    minimum(States, Val, Depth, Win_state).
+minimum(States, Val, Depth, Win_state) :-
     has_win_state(States, Win_state),!,
-    get_state(Win_state, V),
-    % A direct win is a better job than a far away win
-    Val is V,
+    get_state(Win_state, Val),
     write_debug(["Found min winning state: ", Win_state, " on depth: ", Depth, " with value: ", Val, "\n"]).
-min(State, Val, Depth, Best_state) :-
+minimum([New_state|New_states], Val, Depth, Best_state) :-
     stop_depth(Depth),!,
     write_debug(["(-)Depth is: ", Depth, "\n"]),
     write_debug(["At max depth, returning min state\n"]),
-    get_all_boards(State, [New_state|New_states]),
     get_minimal_state_from_list(New_states, New_state, Best_state, 0),
     get_state(Best_state, Val),
     write_debug(["We found minimal state: ", Best_state, " with value: ", Val, "\n\n"]).
-min(State, Val, Depth, Best_state) :-
+minimum([New_state|New_states], Val, Depth, Best_state) :-
     write_debug(["(-) Depth is: ", Depth, "\n"]),
     New_depth is Depth + 1,
-    get_all_boards(State, [New_state|New_states]),
     max(New_state, Val1, New_depth, _),
     get_minimal_state_from_map(New_states, Val1, Best_state, Val, New_depth, New_state),
     write_debug(["We found minimal state: ", Best_state, "\n"]).
@@ -187,22 +182,21 @@ get_minimal_state_from_map([_|States], Cur_val, Best_state, Val, Depth, Cur_best
 
 max(State, Val, Depth, Win_state) :-
     get_all_boards(State, States),
+    maximum(States, Val, Depth, Win_state).
+maximum(States, Val, Depth, Win_state) :-
     has_win_state(States, Win_state),!,
     get_state(Win_state, Val),
-    % A direct win is a better job than a far away win
     write_debug(["Found max winning state: ", Win_state, " on depth: ", Depth, " with value: ", Val, "\n"]).
-max(State, Val, Depth, Best_state) :-
+maximum([New_state|New_states], Val, Depth, Best_state) :-
     stop_depth(Depth),!,
     write_debug(["(+) Depth is: ", Depth, "\n"]),
     write_debug(["At max depth, returning max state\n"]),
-    get_all_boards(State, [New_state|New_states]),
     get_maximal_state_from_list(New_states, New_state, Best_state, 0),
     get_state(Best_state, Val),
     write_debug(["We found maximal state: ", Best_state, " with value: ", Val, "\n\n"]).
-max(State, Val, Depth, Best_state) :-
+maximum([New_state|New_states], Val, Depth, Best_state) :-
     write_debug(["(+) Depth is: ", Depth, "\n"]),
     New_depth is Depth + 1,
-    get_all_boards(State, [New_state|New_states]),
     min(New_state, Val1, New_depth, _),
     get_maximal_state_from_map(New_states, Val1, Best_state, Val, New_depth, New_state),
     write_debug(["We found minimal state: ", Best_state, "\n"]).
@@ -229,13 +223,13 @@ get_maximal_state_from_map([_|States], Cur_val, Best_state, Val, Depth, Cur_best
 get_best_board(Data, Best_state) :-
     get_turn(Data, Turn),
     state_direction(Data, Turn, -1),
-    min(Data, Val, 1, Best_state),
+    min(Data, Val, 0, Best_state),
     write_debug(["The best board is: ", Best_state, "\n"]),
     write_debug(["Best game solution has a value of: ", Val, "\n"]).
 
 get_best_board(Data, Best_state) :-
     get_turn(Data, Turn),
     state_direction(Data, Turn, 1),
-    max(Data, Val, 1, Best_state),
+    max(Data, Val, 0, Best_state),
     write_debug(["The best board is: ", Best_state, "\n"]),
     write_debug(["Best game solution has a value of: ", Val, "\n"]).
