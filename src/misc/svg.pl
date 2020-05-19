@@ -1,17 +1,17 @@
 % Print the state of the board as an svg
-:- module(svg, [print_svg/1]).
+:- module(svg, [print_svg/2, print_svg_header/0, print_svg_footer/0]).
 
 tiles_to_coords([],[]).
 tiles_to_coords([Tile|Tiles], [X/Y|Coords]) :-
     get_tile_coord(Tile, X, Y),
     tiles_to_coords(Tiles, Coords).
 
-print_svg(State) :-
+print_svg(State, I) :-
     get_size(State, X, Y),
     get_orientation(State, Color_X, Color_Y),
 
     % Print the header containing some stuff
-    print_header(X, Y),
+    print_header(X, Y, I),
 
     % --- Starting here it's specific for 1 board
 
@@ -35,10 +35,11 @@ print_svg(State) :-
     % The </g> is per board, the </svg> is general
     print_footer.
 
-print_header(X, Y) :-
+print_header(X, Y, I) :-
+    VBox_I is 350  * I,
     VBox_X is 1.75 * (2 + X + Y/2),
     VBox_Y is 1.5  * (2 + Y),
-    writef("<svg width=\"500\" height=\"329.6703296703297\" viewBox=\"0 0 %w %w\" xmlns=\"http://www.w3.org/2000/svg\">", [VBox_X, VBox_Y]),
+    writef("<svg width=\"500\" height=\"350\" viewBox=\"0 0 %w %w\" y=\"%w\">", [VBox_X, VBox_Y, VBox_I]),
     writeln("
           <defs>
         <style>
@@ -108,3 +109,9 @@ print_filled_tile(Tile) :-
 
 print_footer:-
     write("</g></svg>").
+
+print_svg_header:-
+    write("<svg xmlns=\"http://www.w3.org/2000/svg\">\n").
+
+print_svg_footer:-
+    write("</svg>\n").

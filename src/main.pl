@@ -41,10 +41,18 @@ get_new_boards(Data, Args, States) :-
 get_new_boards(Data, _, [State]) :-
     get_best_board(Data, State).
 
+
+print_svgs([],_) :- print_svg_footer.
+print_svgs([State|States], I) :-
+    print_svg(State, I),
+    I1 is I + 1,
+    print_svgs(States, I1).
+
 % Print the states, this is in a SVG manner when SVG is in the cli Args, else just to stdout
 print_boards(States, Args) :-
     member('SVG', Args), !,
-    maplist(print_svg, States).
+    print_svg_header,
+    print_svgs(States, 0).
 print_boards(States, _) :-
     print_boards(States).
 
