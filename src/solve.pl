@@ -138,7 +138,7 @@ is_win_state(State) :-
     member(Win, Win_options).
 
 
-stop_depth(2).
+stop_depth(4).
 
 min(State, Val, Depth, Win_state) :-
     get_all_boards(State, States),
