@@ -1,0 +1,13 @@
+PASS
+0
+tiles: 5
+    (A3) -> blue
+    (B1) -> red
+    (B2) -> red
+    (B3) -> red
+    (C1) -> blue
+state: won by red
+orientation: red * blue
+size: 3 * 3
+turn: blue
+errors:

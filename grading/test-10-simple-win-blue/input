@@ -1,0 +1,9 @@
+tiles: 4
+    (B1) -> red
+    (A3) -> blue
+    (B3) -> red
+    (C1) -> blue
+turn: blue
+size: 3 * 3
+orientation: red * blue
+state: undecided

@@ -1,0 +1,4 @@
+FAILED
+Exitcode: 2
+errors:
+ERROR: -g main: >/2: Arguments are not sufficiently instantiated

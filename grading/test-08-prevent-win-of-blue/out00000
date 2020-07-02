@@ -1,0 +1,14 @@
+size: 5 * 5
+tiles: 9
+    (A2) -> red
+    (A4) -> red
+    (A1) -> red
+    (A3) -> blue
+    (A5) -> red
+    (B3) -> blue
+    (C3) -> red
+    (E3) -> blue
+    (D3) -> blue
+orientation: red * blue
+state: undecided
+turn: blue

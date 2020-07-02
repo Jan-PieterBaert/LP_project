@@ -1,0 +1,32 @@
+size: 9 * 9
+orientation: red * blue
+state: undecided
+tiles: 27
+  (A3) -> blue
+  (A9) -> red
+  (B3) -> red
+  (B5) -> red
+  (B8) -> blue
+  (B9) -> red
+  (C4) -> red
+  (C5) -> blue
+  (C6) -> blue
+  (D4) -> red
+  (D6) -> blue
+  (D9) -> red
+  (E1) -> blue
+  (E6) -> red
+  (F1) -> red
+  (F3) -> red
+  (F6) -> red
+  (F8) -> blue
+  (F9) -> blue
+  (G7) -> red
+  (H2) -> blue
+  (H4) -> red
+  (H7) -> blue
+  (I1) -> red
+  (I2) -> blue
+  (I5) -> blue
+  (I9) -> blue
+turn: blue

@@ -1,0 +1,7 @@
+
+
+8-8-8-8-8-8-8-8-8-8-8-8-8-8-8-8
+ERROR: -g main: >/2: Arguments are not sufficiently instantiated
+8-8-8-8-8-8-8-8-8-8-8-8-8-8-8-8
+FAILED
+Exitcode: 2

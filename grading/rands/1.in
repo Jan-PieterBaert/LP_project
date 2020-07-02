@@ -1,0 +1,5 @@
+size: 1 * 1
+orientation: red * blue
+state: undecided
+tiles: 0
+turn: blue

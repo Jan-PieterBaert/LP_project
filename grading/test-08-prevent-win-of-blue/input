@@ -1,0 +1,13 @@
+tiles: 8
+    (A1) -> red
+    (A2) -> red
+    (A5) -> red
+    (B3) -> blue
+    (A4) -> red
+    (D3) -> blue
+    (E3) -> blue
+    (A3) -> blue
+size: 5 * 5
+orientation: red * blue
+state: undecided
+turn: red

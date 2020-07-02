@@ -1,0 +1,7 @@
+size: 3 * 3
+orientation: red * blue
+state: undecided
+turn: red
+tiles: 2
+  (B2)->blue
+  (C2)->red

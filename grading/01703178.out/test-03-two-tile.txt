@@ -1,0 +1,72 @@
+PASS
+0
+==> /tmp/checker-???/out00000 <==
+tiles: 3
+    (A2) -> red
+    (A3) -> blue
+    (C2) -> red
+state: undecided
+orientation: red * blue
+size: 3 * 3
+turn: blue
+
+==> /tmp/checker-???/out00001 <==
+tiles: 3
+    (A3) -> blue
+    (B1) -> red
+    (C2) -> red
+state: undecided
+orientation: red * blue
+size: 3 * 3
+turn: blue
+
+==> /tmp/checker-???/out00002 <==
+tiles: 3
+    (A1) -> red
+    (A3) -> blue
+    (C2) -> red
+state: undecided
+orientation: red * blue
+size: 3 * 3
+turn: blue
+
+==> /tmp/checker-???/out00003 <==
+tiles: 3
+    (A3) -> blue
+    (B2) -> red
+    (C2) -> red
+state: undecided
+orientation: red * blue
+size: 3 * 3
+turn: blue
+
+==> /tmp/checker-???/out00004 <==
+tiles: 3
+    (A3) -> blue
+    (C1) -> red
+    (C2) -> red
+state: undecided
+orientation: red * blue
+size: 3 * 3
+turn: blue
+
+==> /tmp/checker-???/out00005 <==
+tiles: 3
+    (A3) -> blue
+    (B3) -> red
+    (C2) -> red
+state: undecided
+orientation: red * blue
+size: 3 * 3
+turn: blue
+
+==> /tmp/checker-???/out00006 <==
+tiles: 3
+    (A3) -> blue
+    (C2) -> red
+    (C3) -> red
+state: undecided
+orientation: red * blue
+size: 3 * 3
+turn: blue
+errors:

@@ -1,0 +1,8 @@
+==> /tmp/checker-???/err <==
+ERROR: -g main: >/2: Arguments are not sufficiently instantiated
+
+==> /tmp/checker-???/out <==
+FAILED
+wrong colour
+
+==> /tmp/checker-???/progout <==

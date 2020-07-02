@@ -1,0 +1,14 @@
+PASS
+==> /tmp/checker-???/err <==
+
+==> /tmp/checker-???/out <==
+0
+
+==> /tmp/checker-???/progout <==
+tiles: 2
+    (A2) -> blue
+    (B2) -> red
+state: undecided
+orientation: red * blue
+size: 2 * 2
+turn: red

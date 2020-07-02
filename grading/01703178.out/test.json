@@ -1,0 +1,16 @@
+{
+   "test": [
+      {"name":"01-empty", "result":"PASS"},
+      {"name":"02-one-tile", "result":"PASS"},
+      {"name":"03-two-tile", "result":"PASS"},
+      {"name":"04-three-tile", "result":"PASS"},
+      {"name":"05-four-tile", "result":"PASS"},
+      {"name":"06-spaces", "result":"FAILED"},
+      {"name":"07-simple-win-red", "result":"PASS"},
+      {"name":"08-prevent-win-of-blue", "result":"FAILED"},
+      {"name":"09-prevent-win-in-two", "result":"FAILED"},
+      {"name":"10-simple-win-blue", "result":"PASS"},
+      {"name":"11-do-win-in-two", "result":"FAILED"},
+      {"name":"12-no-side-touch", "result":"FAILED"}
+   ]
+}

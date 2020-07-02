@@ -1,0 +1,26 @@
+size: 8 * 8
+orientation: red * blue
+state: undecided
+tiles: 21
+  (A8) -> blue
+  (B4) -> blue
+  (B7) -> blue
+  (C3) -> blue
+  (C4) -> red
+  (C5) -> blue
+  (C6) -> blue
+  (C7) -> blue
+  (D2) -> blue
+  (D4) -> red
+  (E2) -> red
+  (E7) -> blue
+  (E8) -> red
+  (F1) -> red
+  (F2) -> red
+  (F7) -> blue
+  (G3) -> red
+  (G5) -> red
+  (H1) -> red
+  (H2) -> red
+  (H7) -> red
+turn: blue

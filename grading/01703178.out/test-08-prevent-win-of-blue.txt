@@ -1,0 +1,67 @@
+FAILED
+COMMAND
+swipl -f none -t halt -g main -q main.pl   
+
+INPUT
+    tiles: 8
+        (A1) -> red
+        (A2) -> red
+        (A5) -> red
+        (B3) -> blue
+        (A4) -> red
+        (D3) -> blue
+        (E3) -> blue
+        (A3) -> blue
+    size: 5 * 5
+    orientation: red * blue
+    state: undecided
+    turn: red
+ONLY YOU
+tiles: 9
+    (A1) -> red
+    (A2) -> red
+    (A3) -> blue
+    (A4) -> red
+    (A5) -> red
+    (B2) -> red
+    (B3) -> blue
+    (D3) -> blue
+    (E3) -> blue
+state: undecided
+orientation: red * blue
+size: 5 * 5
+turn: blue
+
+ONLY US
+size: 5 * 5
+tiles: 9
+    (A2) -> red
+    (A4) -> red
+    (A1) -> red
+    (A3) -> blue
+    (A5) -> red
+    (B3) -> blue
+    (C3) -> red
+    (E3) -> blue
+    (D3) -> blue
+orientation: red * blue
+state: undecided
+turn: blue
+
+BOTH
+ - 0 results matched
+tiles: 9
+    (A1) -> red
+    (A2) -> red
+    (A3) -> blue
+    (A4) -> red
+    (A5) -> red
+    (B2) -> red
+    (B3) -> blue
+    (D3) -> blue
+    (E3) -> blue
+state: undecided
+orientation: red * blue
+size: 5 * 5
+turn: blue
+errors:

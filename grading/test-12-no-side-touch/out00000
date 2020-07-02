@@ -1,0 +1,12 @@
+tiles: 7
+    (B5) -> red
+    (B3) -> blue
+    (E2) -> red
+    (D3) -> blue
+    (C1) -> red
+    (C3) -> blue
+    (E3) -> blue
+state: undecided
+size: 5 * 5
+turn: red
+orientation: red * blue

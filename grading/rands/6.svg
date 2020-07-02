@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="800"
+        viewBox="0 0 19.25 12.0">
+
+  <defs>
+    <style>
+
+use:not([fill]) {fill: #ECECEC;}
+
+text.row_or_col {
+    font-size: 0.3px;
+    font-weight: bold;
+    font-family: sans;
+    fill: white;
+    stroke: black;
+    stroke-width: 0.005px;
+    paint-order: stroke;
+}
+
+    </style>
+
+    <polygon id="tile" points=" 0.35,0.35 0.68,-0.35 0.35,-0.68 -0.35,-0.35 -0.68,0.35 -0.35,0.68 " stroke-width="0.01" stroke="black"/>
+  </defs>
+  <g transform="matrix(1.73205080756 0 0.86602540378 1.5 3.46410161512 2.5) translate(0, 0)">
+    <g>
+      <polygon fill="red" points="-1,-1 0,0 5,0 6,-1"/>
+      <polygon fill="red" points="-1,6 0,5 5,5 6,6"/>
+      <polygon fill="blue" points="-1,-1 0,0 0,5 -1,6"/>
+      <polygon fill="blue" points="6,-1 5,0 5,5 6,6"/>`
+    </g>
+<text class="row_or_col" x="0" y="-0.65">A</text>
+<text class="row_or_col" x="1" y="-0.65">B</text>
+<text class="row_or_col" x="2" y="-0.65">C</text>
+<text class="row_or_col" x="3" y="-0.65">D</text>
+<text class="row_or_col" x="4" y="-0.65">E</text>
+<text class="row_or_col" x="5" y="-0.65">F</text>
+<text class="row_or_col" x="-0.95" y="0">1</text>
+<text class="row_or_col" x="-0.95" y="1">2</text>
+<text class="row_or_col" x="-0.95" y="2">3</text>
+<text class="row_or_col" x="-0.95" y="3">4</text>
+<text class="row_or_col" x="-0.95" y="4">5</text>
+<text class="row_or_col" x="-0.95" y="5">6</text>
+<use href="#tile" x="0" y="0" />
+<use href="#tile" x="0" y="1" />
+<use href="#tile" x="0" y="2" />
+<use href="#tile" x="0" y="3"  fill="red" />
+<use href="#tile" x="0" y="4"  fill="red" />
+<use href="#tile" x="0" y="5"  fill="blue" />
+<use href="#tile" x="1" y="0"  fill="red" />
+<use href="#tile" x="1" y="1"  fill="blue" />
+<use href="#tile" x="1" y="2" />
+<use href="#tile" x="1" y="3" />
+<use href="#tile" x="1" y="4" />
+<use href="#tile" x="1" y="5"  fill="blue" />
+<use href="#tile" x="2" y="0" />
+<use href="#tile" x="2" y="1"  fill="red" />
+<use href="#tile" x="2" y="2" />
+<use href="#tile" x="2" y="3" />
+<use href="#tile" x="2" y="4" />
+<use href="#tile" x="2" y="5" />
+<use href="#tile" x="3" y="0"  fill="blue" />
+<use href="#tile" x="3" y="1" />
+<use href="#tile" x="3" y="2" />
+<use href="#tile" x="3" y="3" />
+<use href="#tile" x="3" y="4"  fill="blue" />
+<use href="#tile" x="3" y="5" />
+<use href="#tile" x="4" y="0"  fill="blue" />
+<use href="#tile" x="4" y="1" />
+<use href="#tile" x="4" y="2" />
+<use href="#tile" x="4" y="3" />
+<use href="#tile" x="4" y="4"  fill="red" />
+<use href="#tile" x="4" y="5" />
+<use href="#tile" x="5" y="0" />
+<use href="#tile" x="5" y="1" />
+<use href="#tile" x="5" y="2"  fill="red" />
+<use href="#tile" x="5" y="3" />
+<use href="#tile" x="5" y="4" />
+<use href="#tile" x="5" y="5" />
+</g></svg>

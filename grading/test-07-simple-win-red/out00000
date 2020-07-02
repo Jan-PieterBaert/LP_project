@@ -1,0 +1,10 @@
+turn: blue
+tiles: 5
+    (A3) -> blue
+    (B2) -> red
+    (B1) -> red
+    (B3) -> red
+    (C1) -> blue
+state: won by red
+orientation: red * blue
+size: 3 * 3
