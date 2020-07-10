@@ -35,9 +35,10 @@ tile_from_data(((X, Y), Color), Tile) :- new_tile(Tile, X, Y, Color).
 fix_tiles(Data, Tiles) :- maplist(tile_from_data, Data, Tiles).
 
 % Get the states that should be printed, this is all states in case TEST is in the cli Args, otherwise the best state
-get_new_boards(Data, Args, States) :-
+get_new_boards(Data, Args, New_States) :-
     member('TEST', Args), !,
-    get_all_boards(Data, States).
+    get_all_boards(Data, States),
+    maplist(check_win, States, New_States).
 get_new_boards(Data, _, [State]) :-
     get_best_board(Data, State).
 

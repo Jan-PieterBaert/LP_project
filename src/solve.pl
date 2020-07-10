@@ -1,6 +1,7 @@
 :- module(solve, [
         get_all_boards/2,
         get_best_board/2,
+        check_win/2,
 
         % Below functions is to be able to use it in the printing of svg's
         get_all_coords_in_bound/2
@@ -61,17 +62,25 @@ filter_tiles_to_coords(Tiles, Turn, Coords) :-
 
 
 % Check if the board is won by the player currently in turn
-check_win([C|Coords], Data, New_data, Direction) :-
+check_win(Data, New_data) :-
     % Check floadfill
-    floodfill([C], Coords),
-    % The new state for the game is +/- 10 to indicate which player won
+    get_tiles(Data, Tiles),
+    get_turn(Data, Turn),
+    get_size(Data, X, Y),
+    exclude(is_color(Turn), Tiles, New_Tiles),
+    maplist(get_coord_from_tile, New_Tiles, [C|Coords]),
+    state_direction(Data, Turn, Dir),
+    % Because the turn already switched
+    Direction is Dir * -1,
+    get_extra_border_coords(X/Y, Direction, New_border_coords),
+    append(Coords, New_border_coords, Coords_to_check),
+    floodfill([C], Coords_to_check),
     win_value(Mul), !,
     New_state is Direction * Mul,
     set_state(Data, New_state, New_data).
-% Todo add caching for this?
 
 % when the game is not won, don't change the data
-check_win(_, Data, Data, _).
+check_win(Data, Data).
 
 
 % This is the classic floodfill algorithm
@@ -82,8 +91,24 @@ floodfill([Todo|Todos], Coords) :-
     remove_elements(Coords, Neighs, New_coords),
     append(Todos, Neighs, New_todos),
     floodfill(New_todos, New_coords).
-% Todo add caching for this?
 
+get_tile_coord_utility(Turn/_, Turn, Tile, Value) :-
+    get_tile_coord(Tile, Value, _).
+get_tile_coord_utility(_/Turn, Turn, Tile, Value) :-
+    get_tile_coord(Tile, _, Value).
+
+is_color(Color, Tile) :-
+    get_tile_color(Tile, Color).
+
+get_utility(Data, New_data) :-
+    get_turn(Data, Turn),
+    get_orientation(Data, X, Y),
+    get_tiles(Data, Tiles),
+    exclude(is_color(Turn), Tiles, Filtered_Tiles),
+    maplist(get_tile_coord_utility(X/Y, Turn), Filtered_Tiles, Values),
+    sort(Values, Sorted_Values),
+    length(Sorted_Values, Length),
+    set_state(Data, Length, New_data).
 
 % Generate the new states from a list of options and the current state
 generate_states(_, _, [], _, [], _).
@@ -92,7 +117,7 @@ generate_states(Data, Turn, [X/Y|Options], Coords, [New_state|States], Direction
     new_tile(Tile, X, Y, Turn),
     add_tile(Data, Tile, State),
     % Check the new board if it's won by the current player
-    check_win([X/Y|Coords], State, New_state, Direction),
+    get_utility(State, New_state),
     % Generate the states for the remaining options
     generate_states(Data, Turn, Options, Coords, States, Direction).
 
@@ -138,88 +163,90 @@ is_win_state(State) :-
     member(Win, Win_options).
 
 
-stop_depth(4).
-
-min(State, Val, Depth, Win_state) :-
-    get_all_boards(State, States),
-    minimum(States, Val, Depth, Win_state).
-minimum(States, Val, Depth, Win_state) :-
-    has_win_state(States, Win_state),!,
-    get_state(Win_state, Val),
-    write_debug(["Found min winning state: ", Win_state, " on depth: ", Depth, " with value: ", Val, "\n"]).
-minimum([New_state|New_states], Val, Depth, Best_state) :-
-    stop_depth(Depth),!,
-    write_debug(["(-)Depth is: ", Depth, "\n"]),
-    write_debug(["At max depth, returning min state\n"]),
-    get_minimal_state_from_list(New_states, New_state, Best_state, 0),
-    get_state(Best_state, Val),
-    write_debug(["We found minimal state: ", Best_state, " with value: ", Val, "\n\n"]).
-minimum([New_state|New_states], Val, Depth, Best_state) :-
-    write_debug(["(-) Depth is: ", Depth, "\n"]),
-    New_depth is Depth + 1,
-    max(New_state, Val1, New_depth, _),
-    get_minimal_state_from_map(New_states, Val1, Best_state, Val, New_depth, New_state),
-    write_debug(["We found minimal state: ", Best_state, "\n"]).
-
-get_minimal_state_from_list(_, Cur_state, Cur_state, Val) :- win_options([-,Val]), !.
-get_minimal_state_from_list([], Cur_state, Cur_state, _).
-get_minimal_state_from_list([State|States], _, Best_state, Cur_val) :-
-    get_state(State, Val),
-    Val < Cur_val, !,
-    get_minimal_state_from_list(States, State, Best_state, Val).
-get_minimal_state_from_list([_|States], State, Best_state, Cur_val) :-
-    get_minimal_state_from_list(States, State, Best_state, Cur_val).
-
-get_minimal_state_from_map([], Val, State, Val, _, State).
-get_minimal_state_from_map(_, Val, State, Val, _, State) :- win_options([_,Val]), !.
-get_minimal_state_from_map([State|States], Cur_val, Best_state, Val, Depth, _) :-
-    max(State, New_val, Depth, _),
-    New_val < Cur_val, !,
-    get_minimal_state_from_map(States, New_val, Best_state, Val, Depth, State).
-get_minimal_state_from_map([_|States], Cur_val, Best_state, Val, Depth, Cur_best) :-
-    get_minimal_state_from_map(States, Cur_val, Best_state, Val, Depth, Cur_best).
-
-
-max(State, Val, Depth, Win_state) :-
-    get_all_boards(State, States),
-    maximum(States, Val, Depth, Win_state).
-maximum(States, Val, Depth, Win_state) :-
-    has_win_state(States, Win_state),!,
-    get_state(Win_state, Val),
-    write_debug(["Found max winning state: ", Win_state, " on depth: ", Depth, " with value: ", Val, "\n"]).
-maximum([New_state|New_states], Val, Depth, Best_state) :-
-    stop_depth(Depth),!,
-    write_debug(["(+) Depth is: ", Depth, "\n"]),
-    write_debug(["At max depth, returning max state\n"]),
-    get_maximal_state_from_list(New_states, New_state, Best_state, 0),
-    get_state(Best_state, Val),
-    write_debug(["We found maximal state: ", Best_state, " with value: ", Val, "\n\n"]).
-maximum([New_state|New_states], Val, Depth, Best_state) :-
-    write_debug(["(+) Depth is: ", Depth, "\n"]),
-    New_depth is Depth + 1,
-    min(New_state, Val1, New_depth, _),
-    get_maximal_state_from_map(New_states, Val1, Best_state, Val, New_depth, New_state),
-    write_debug(["We found minimal state: ", Best_state, "\n"]).
-
-get_maximal_state_from_list([], Cur_state, Cur_state, _) :- !.
-get_maximal_state_from_list(_, Cur_state, Cur_state, Val) :- win_options([Val,_]), !.
-get_maximal_state_from_list([State|States], _, Best_state, Cur_val) :-
-    Val > Cur_val, !,
-    get_maximal_state_from_list(States, State, Best_state, Val).
-get_maximal_state_from_list([_|States], State, Best_state, Val) :-
-    get_maximal_state_from_list(States, State, Best_state, Val).
-
-get_maximal_state_from_map([], Val, State, Val, _, State).
-get_maximal_state_from_map(_, Val, State, Val, _, State) :- win_options([Val,_]), !.
-get_maximal_state_from_map([State|States], Cur_val, Best_state, Val, Depth, _) :-
-    min(State, New_val, Depth, _),
-    New_val > Cur_val, !,
-    get_maximal_state_from_map(States, New_val, Best_state, Val, Depth, State).
-get_maximal_state_from_map([_|States], Cur_val, Best_state, Val, Depth, Cur_best) :-
-    get_maximal_state_from_map(States, Cur_val, Best_state, Val, Depth, Cur_best).
+% stop_depth(2).
+%
+% min(State, Val, Depth, Win_state) :-
+%     get_all_boards(State, States),
+%     minimum(States, Val, Depth, Win_state).
+% minimum([New_state|New_states], Val, Depth, Best_state) :-
+%     stop_depth(Depth),!,
+%     write_debug(["(-)Depth is: ", Depth, "\n"]),
+%     write_debug(["At max depth, returning min state\n"]),
+%     get_minimal_state_from_list(New_states, New_state, Best_state, 0),
+%     get_state(Best_state, Val),
+%     write_debug(["We found minimal state: ", Best_state, " with value: ", Val, "\n\n"]).
+% minimum([New_state|New_states], Val, Depth, Best_state) :-
+%     write_debug(["(-) Depth is: ", Depth, "\n"]),
+%     New_depth is Depth + 1,
+%     max(New_state, Val1, New_depth, _),
+%     get_minimal_state_from_map(New_states, Val1, Best_state, Val, New_depth, New_state),
+%     write_debug(["We found minimal state: ", Best_state, "\n"]).
+%
+% get_minimal_state_from_list(_, Cur_state, Cur_state, Val) :- win_options([-,Val]), !.
+% get_minimal_state_from_list([], Cur_state, Cur_state, _).
+% get_minimal_state_from_list([State|States], _, Best_state, Cur_val) :-
+%     get_state(State, Val),
+%     Val < Cur_val, !,
+%     get_minimal_state_from_list(States, State, Best_state, Val).
+% get_minimal_state_from_list([_|States], State, Best_state, Cur_val) :-
+%     get_minimal_state_from_list(States, State, Best_state, Cur_val).
+%
+% get_minimal_state_from_map([], Val, State, Val, _, State).
+% get_minimal_state_from_map(_, Val, State, Val, _, State) :- win_options([_,Val]), !.
+% get_minimal_state_from_map([State|States], Cur_val, Best_state, Val, Depth, _) :-
+%     max(State, New_val, Depth, _),
+%     New_val < Cur_val, !,
+%     get_minimal_state_from_map(States, New_val, Best_state, Val, Depth, State).
+% get_minimal_state_from_map([_|States], Cur_val, Best_state, Val, Depth, Cur_best) :-
+%     get_minimal_state_from_map(States, Cur_val, Best_state, Val, Depth, Cur_best).
+%
+%
+% max(State, Val, Depth, Win_state) :-
+%     get_all_boards(State, States),
+%     maximum(States, Val, Depth, Win_state).
+% maximum([New_state|New_states], Val, Depth, Best_state) :-
+%     stop_depth(Depth),!,
+%     write_debug(["(+) Depth is: ", Depth, "\n"]),
+%     write_debug(["At max depth, returning max state\n"]),
+%     get_maximal_state_from_list(New_states, New_state, Best_state, 0),
+%     get_state(Best_state, Val),
+%     write_debug(["We found maximal state: ", Best_state, " with value: ", Val, "\n\n"]).
+% maximum([New_state|New_states], Val, Depth, Best_state) :-
+%     write_debug(["(+) Depth is: ", Depth, "\n"]),
+%     New_depth is Depth + 1,
+%     min(New_state, Val1, New_depth, _),
+%     get_maximal_state_from_map(New_states, Val1, Best_state, Val, New_depth, New_state),
+%     write_debug(["We found minimal state: ", Best_state, "\n"]).
+%
+% get_maximal_state_from_list([], Cur_state, Cur_state, _) :- !.
+% get_maximal_state_from_list(_, Cur_state, Cur_state, Val) :- win_options([Val,_]), !.
+% get_maximal_state_from_list([State|States], _, Best_state, Cur_val) :-
+%     Val > Cur_val, !,
+%     get_maximal_state_from_list(States, State, Best_state, Val).
+% get_maximal_state_from_list([_|States], State, Best_state, Val) :-
+%     get_maximal_state_from_list(States, State, Best_state, Val).
+%
+% get_maximal_state_from_map([], Val, State, Val, _, State).
+% get_maximal_state_from_map(_, Val, State, Val, _, State) :- win_options([Val,_]), !.
+% get_maximal_state_from_map([State|States], Cur_val, Best_state, Val, Depth, _) :-
+%     min(State, New_val, Depth, _),
+%     New_val > Cur_val, !,
+%     get_maximal_state_from_map(States, New_val, Best_state, Val, Depth, State).
+% get_maximal_state_from_map([_|States], Cur_val, Best_state, Val, Depth, Cur_best) :-
+%     get_maximal_state_from_map(States, Cur_val, Best_state, Val, Depth, Cur_best).
 
 
-% Currently just return the first possible state if no win is possible
+% If a win is possible in one step, do it
+get_best_board(Data, Best_state) :-
+    get_all_boards(Data, States),
+    maplist(check_win, States, New_States),
+    has_win_state(New_States, Best_state).
+
+% Else temporarily just return a state
+get_best_board(Data, Best_state) :-
+    get_all_boards(Data, [Best_state|_]).
+
+% Else traverse the game tree
 get_best_board(Data, Best_state) :-
     get_turn(Data, Turn),
     state_direction(Data, Turn, -1),

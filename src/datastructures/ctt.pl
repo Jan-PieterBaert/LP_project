@@ -36,7 +36,7 @@ get_orientation(board(_, _, X/Y, _, _), X, Y).
 set_orientation(board(A, B, _, C, D), X, Y, board(A, B, X/Y, C, D)).
 
 % For the state of the game (undecided/Won by player1/2)
-%% The state is between -9 and 9 for a draw game (to allow heuristics), 10 for a game won by player 1 and -10 for a game won by player 2
+%% For the state of the game we use the heuristic
 get_state(board(_, _, _, State, _), State).
 set_state(board(A, B, C, _, D), State, board(A, B, C, State, D)).
 
