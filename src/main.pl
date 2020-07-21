@@ -5,6 +5,7 @@
 :- use_module(misc/io_operations).
 :- use_module(misc/parse).
 :- use_module(misc/svg).
+:- use_module(misc/art).
 :- use_module(solve).
 
 % Check that the color of each tile is valid
@@ -49,11 +50,14 @@ print_svgs([State|States], I) :-
     I1 is I + 1,
     print_svgs(States, I1).
 
-% Print the states, this is in a SVG manner when SVG is in the cli Args, else just to stdout
+% Print the states, this is in a SVG manner when SVG is in the cli Args, in a unicode art manner when ART is in the cli Args, else just to stdout
 print_boards(States, Args) :-
     member('SVG', Args), !,
     print_svg_header,
     print_svgs(States, 0).
+print_boards(States, Args) :-
+    member('ART', Args),
+    maplist(print_board_art, States).
 print_boards(States, _) :-
     print_boards(States).
 
@@ -84,4 +88,3 @@ main(Args) :-
     get_new_boards(Board, Args, States),
     % Print the board in a normal or svg fashion
     print_boards(States, Args).
-    % statistics.
