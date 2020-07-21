@@ -168,40 +168,37 @@ is_win_state(State) :-
     member(Win, Win_options).
 
 
-% stop_depth(2).
-%
 % The following code is based on the code from the course
 get_all_successors(Data, States) :- get_all_boards(Data, States), States \= [].
 min_to_move(Data) :- get_turn(Data, Turn), get_orientation(Data, _, Turn).
 max_to_move(Data) :- get_turn(Data, Turn), get_orientation(Data, Turn, _).
 utility(Data, Value) :- get_utility(Data, New_data), get_state(New_data, Value).
 
-minimax(Pos, _, Val, 0) :-                     % At max depth
+% At max depth we take the utility of the state
+minimax(Pos, _, Val, 0) :-
     utility(Pos, Val), !.
-minimax(Pos, BestNextPos, Val, Depth) :-                     % Pos has successors
+% Otherwise take the best of all successors
+minimax(Pos, BestNextPos, Val, Depth) :-
     get_all_successors(Pos, NextPosList),
     Depth_minus_one is Depth - 1,
     best(NextPosList, BestNextPos, Val, Depth_minus_one), !.
-
-minimax(Pos, _, Val, _) :-                     % Pos has no successors
+% If the state has no successors, take the utility
+minimax(Pos, _, Val, _) :-
     utility(Pos, Val).
 
 best([Pos], Pos, Val, Depth) :-
     minimax(Pos, _, Val, Depth), !.
-
 best([Pos1 | PosList], BestPos, BestVal, Depth) :-
     minimax(Pos1, _, Val1, Depth),
     best(PosList, Pos2, Val2, Depth),
     betterOf(Pos1, Val1, Pos2, Val2, BestPos, BestVal).
 
 betterOf(Pos0, Val0, _, Val1, Pos0, Val0) :-   % Pos0 better than Pos1
-    % write("Better of"), write([Pos0, Val0, Val1, Pos0, Val0]), write("\n"),
     min_to_move(Pos0),                         % MIN to move in Pos0
     Val0 > Val1, !                             % MAX prefers the greater value
     ;
     max_to_move(Pos0),                         % MAX to move in Pos0
     Val0 < Val1, !.                            % MIN prefers the lesser value
-
 betterOf(_, _, Pos1, Val1, Pos1, Val1).        % Otherwise Pos1 better than Pos0
 
 
@@ -212,21 +209,6 @@ get_best_board(Data, Best_state) :-
     has_win_state(New_States, Best_state).
 
 % Else temporarily just return a state
-get_best_board(Data, Best_state) :-
-    minimax(Data, Best_state, _, 3).
-    % get_all_boards(Data, [Best_state|_]).
-
-% Else traverse the game tree
-% get_best_board(Data, Best_state) :-
-%     get_turn(Data, Turn),
-%     state_direction(Data, Turn, -1),
-%     min(Data, Val, 0, Best_state),
-%     write_debug(["The best board is: ", Best_state, "\n"]),
-%     write_debug(["Best game solution has a value of: ", Val, "\n"]).
-%
-% get_best_board(Data, Best_state) :-
-%     get_turn(Data, Turn),
-%     state_direction(Data, Turn, 1),
-%     max(Data, Val, 0, Best_state),
-%     write_debug(["The best board is: ", Best_state, "\n"]),
-%     write_debug(["Best game solution has a value of: ", Val, "\n"]).
+get_best_board(Data, Return_state) :-
+    minimax(Data, Best_state, _, 3),
+    check_win(Best_state, Return_state).
