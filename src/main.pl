@@ -6,6 +6,7 @@
 :- use_module(misc/parse).
 :- use_module(misc/svg).
 :- use_module(misc/art).
+:- use_module(interactive).
 :- use_module(solve).
 
 % Check that the color of each tile is valid
@@ -75,6 +76,12 @@ main :-
     main(Argv_sorted).
 
 % Execute the main program
+% The interactive version:
+main(Args) :-
+    member('PLAY', Args), !,
+    start_interactive_game.
+
+% The non-interactive version:
 main(Args) :-
     % Parse the data
     parse([Size, Turn, Ori, State, Tiles_data]),

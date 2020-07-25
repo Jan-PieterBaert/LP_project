@@ -2,6 +2,9 @@
         get_all_boards/2,
         get_best_board/2,
         check_win/2,
+        is_win_state/1,
+        get_coord_from_tile/2,
+        get_all_free_coords/3,
 
         % Below functions is to be able to use it in the printing of svg's
         get_all_coords_in_bound/2
@@ -104,17 +107,18 @@ get_utility(Data, New_data) :-
     get_orientation(Data, X, Y),
     get_turns_utility(Turn, X/Y, Turn1/Turn2),
 
-    exclude(is_color(Turn1), Tiles, Filtered_Tiles1),
-    maplist(get_tile_coord_utility(X/Y, Turn1), Filtered_Tiles1, Values1),
+    exclude(is_color(X), Tiles, Filtered_Tiles1),
+    maplist(get_tile_coord_utility(X/Y, X), Filtered_Tiles1, Values1),
     sort(Values1, Sorted_Values1),
     length(Sorted_Values1, Length1),
 
-    exclude(is_color(Turn2), Tiles, Filtered_Tiles2),
-    maplist(get_tile_coord_utility(X/Y, Turn2), Filtered_Tiles2, Values2),
+    exclude(is_color(Y), Tiles, Filtered_Tiles2),
+    maplist(get_tile_coord_utility(X/Y, Y), Filtered_Tiles2, Values2),
     sort(Values2, Sorted_Values2),
     length(Sorted_Values2, Length2),
 
-    Value is Length1 - Length2,
+    % The utility is: the number of rows the first player has covered - the number of columns the second player has covered
+    Value is Length2 - Length1,
     set_state(Data, Value, New_data).
 
 % Generate the new states from a list of options and the current state

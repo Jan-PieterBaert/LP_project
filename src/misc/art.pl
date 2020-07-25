@@ -2,7 +2,10 @@
         print_board_art/1
     ]).
 
+% Print and empty unicode hexagon
 print_empty_tile             :- write(" \u2B21").
+
+% Print a colored unicode hexagon, there's a limited list of colors and a 'random' for the unknown ones
 print_colored_tile("red")    :- write(" \x1b[31m\u2B22\x1b[39;49m").
 print_colored_tile("green")  :- write(" \x1b[32m\u2B22\x1b[39;49m").
 print_colored_tile("yellow") :- write(" \x1b[33m\u2B22\x1b[39;49m").
@@ -10,6 +13,7 @@ print_colored_tile("blue")   :- write(" \x1b[34m\u2B22\x1b[39;49m").
 print_colored_tile("magenta"):- write(" \x1b[35m\u2B22\x1b[39;49m").
 print_colored_tile("cyan")   :- write(" \x1b[36m\u2B22\x1b[39;49m").
 print_colored_tile("white")  :- write(" \x1b[97m\u2B22\x1b[39;49m").
+% TODO: Make this 'random' (hash based orso)
 print_colored_tile(_)        :- write(" \x1b[92m\u2B22\x1b[39;49m").
 
 tile_to_tuple(Tile, (Y, X, Color)) :-
