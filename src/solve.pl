@@ -95,17 +95,12 @@ get_tile_coord_utility(Turn/_, Turn, Tile, Value) :-
 get_tile_coord_utility(_/Turn, Turn, Tile, Value) :-
     get_tile_coord(Tile, _, Value).
 
-get_turns_utility(Turn, Turn/Y, Turn/Y).
-get_turns_utility(Turn, X/Turn, Turn/X).
-
 is_color(Color, Tile) :-
     get_tile_color(Tile, Color).
 
 get_utility(Data, New_data) :-
-    get_turn(Data, Turn),
     get_tiles(Data, Tiles),
     get_orientation(Data, X, Y),
-    get_turns_utility(Turn, X/Y, Turn1/Turn2),
 
     exclude(is_color(X), Tiles, Filtered_Tiles1),
     maplist(get_tile_coord_utility(X/Y, X), Filtered_Tiles1, Values1),
