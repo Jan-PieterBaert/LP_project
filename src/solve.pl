@@ -166,6 +166,9 @@ is_win_state(State) :-
     win_options(Win_options),
     member(Win, Win_options).
 
+% Add alpha/1 and beta/1 as dynamic clauses to store the values of α and β
+:- dynamic alpha/1.
+:- dynamic beta/1.
 
 % The following code is based on the code from the course
 get_all_successors(Data, States) :- get_all_boards(Data, States), States \= [].
@@ -175,7 +178,11 @@ utility(Data, Value) :- get_utility(Data, New_data), get_state(New_data, Value).
 
 % At max depth we take the utility of the state
 minimax(Pos, _, Val, 0) :-
+    update_alpha_beta(Pos),
     utility(Pos, Val), !.
+% If β is below α, cut here and return the Position and its value
+minimax(Pos, Pos, Val, _) :-
+    alpha(Alpha), beta(Beta), Beta =< Alpha, !, utility(Pos, Val).
 % Otherwise take the best of all successors
 minimax(Pos, BestNextPos, Val, Depth) :-
     get_all_successors(Pos, NextPosList),
@@ -183,9 +190,19 @@ minimax(Pos, BestNextPos, Val, Depth) :-
     best(NextPosList, BestNextPos, Val, Depth_minus_one), !.
 % If the state has no successors, take the utility
 minimax(Pos, _, Val, _) :-
+    update_alpha_beta(Pos),
     utility(Pos, Val).
 
+update_alpha_beta(Pos) :-
+    min_to_move(Pos),   beta(Beta), utility(Pos, Val),
+     retract(beta(Beta)),  assert(beta(Val)), !.
+update_alpha_beta(Pos) :-
+    max_to_move(Pos), alpha(Alpha), utility(Pos, Val),
+    retract(alpha(Alpha)), assert(alpha(Val)), !.
+update_alpha_beta(_).
+
 best([Pos], Pos, Val, Depth) :-
+    update_alpha_beta(Pos),
     minimax(Pos, _, Val, Depth), !.
 best([Pos1 | PosList], BestPos, BestVal, Depth) :-
     minimax(Pos1, _, Val1, Depth),
@@ -208,6 +225,25 @@ get_best_board(Data, Best_state) :-
     has_win_state(New_States, Best_state).
 
 % Else temporarily just return a state
-get_best_board(Data, Return_state) :-
-    minimax(Data, Best_state, _, 3),
-    check_win(Best_state, Return_state).
+get_best_board(Data, Best_state) :-
+    % Set the values for α and β to -1000 and 1000 (as a decent lower and upper bound to start)
+    retractall(alpha(_)), retractall(beta(_)),
+    assert(alpha(-1000)), assert(beta(1000)),
+    debug_print_alpha_beta,
+    % Do a minimax with max depth 4
+    minimax(Data, Best_state, _, 4),
+    debug_print_alpha_beta.
+
+print_if_equal(Data, Data) :-
+    write("THEY ARE FUCKING EQUAL\n").
+print_if_equal(_, _).
+
+% Define debugging level
+% debug(0).
+debug(1).
+debug_print_alpha_beta:-
+    debug(Debug), Debug > 0,
+    alpha(Alpha), beta(Beta),
+    write("Alpha is: "), write(Alpha), write(" | and beta is: "), write(Beta), write("\n").
+debug_print_alpha_beta:-
+    debug(0).
