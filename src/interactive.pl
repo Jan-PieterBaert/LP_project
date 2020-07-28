@@ -6,6 +6,7 @@
 get_default_board(Board, Size) :-
     % Return the default board of a certain size, default board has players "red" and "blue"
     % The turn is randomly chosen
+    write("Flipping coin to determine if the bot or you will start...\n"),
     random_member(Turn, ["red", "blue"]),
     % Then the board is returned
     new_board(Board, (Size, Size), Turn, ("red", "blue"), 0, []).
@@ -21,7 +22,7 @@ start_interactive_game :-
     % Print the initial board
     print_board_art(Board),
     % Give the player some information about which player they are and which direction they play
-    write("You are the red player, the computer is the blue player, you try to connect up and down, the computer left and right\n"),
+    write("You are the red player, the bot is the blue player, you try to connect up and down, the bot left and right\n"),
     % Start the game by doing the initial move
     do_move(Board).
 
@@ -65,7 +66,7 @@ check_win_and_exit(2,Board) :-
     check_win(Board, New_Board),
     is_win_state(New_Board),
     % And ifso write that the computer has won and exit the program
-    write("The computer has won, good luck next time.\n"), halt(0).
+    write("The bot has won, good luck next time.\n"), halt(0).
 % Check if the player (player 1) has won
 check_win_and_exit(1,Board) :-
     % Check if the Board has won
@@ -80,7 +81,7 @@ do_move(Board) :-
     get_turn(Board, Turn),
     get_orientation(Board, _, Turn),
     % Tell the player the computer will compute a move
-    write("Computer will compute a move\n"),
+    write("Computing next move\n"),
     % Compute the next move
     get_best_board(Board, New_Board),
     % Print the new board
