@@ -73,7 +73,7 @@ check_win_and_exit(1,Board) :-
     check_win(Board, New_Board),
     is_win_state(New_Board),
     % And ifso write that the player has won and exit the program
-    write("Congratulations, you won!!!\n"), halt(0).
+    write("Congratulations, you won!!\n"), halt(0).
 check_win_and_exit(_,_).
 
 do_move(Board) :-
