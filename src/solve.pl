@@ -102,18 +102,18 @@ get_utility(Data, New_data) :-
     get_tiles(Data, Tiles),
     get_orientation(Data, X, Y),
 
-    exclude(is_color(X), Tiles, Filtered_Tiles1),
-    maplist(get_tile_coord_utility(X/Y, X), Filtered_Tiles1, Values1),
-    sort(Values1, Sorted_Values1),
-    length(Sorted_Values1, Length1),
+    include(is_color(X), Tiles, Tiles_X),
+    maplist(get_tile_coord_utility(X/Y, Y), Tiles_X, Values_X),
+    sort(Values_X, Sorted_Values_X),
+    length(Sorted_Values_X, Length_X),
 
-    exclude(is_color(Y), Tiles, Filtered_Tiles2),
-    maplist(get_tile_coord_utility(X/Y, Y), Filtered_Tiles2, Values2),
-    sort(Values2, Sorted_Values2),
-    length(Sorted_Values2, Length2),
+    include(is_color(Y), Tiles, Tiles_Y),
+    maplist(get_tile_coord_utility(X/Y, X), Tiles_Y, Values_Y),
+    sort(Values_Y, Sorted_Values_Y),
+    length(Sorted_Values_Y, Length_Y),
 
     % The utility is: the number of rows the first player has covered - the number of columns the second player has covered
-    Value is Length2 - Length1,
+    Value is Length_X - Length_Y,
     set_state(Data, Value, New_data).
 
 % Generate the new states from a list of options and the current state
