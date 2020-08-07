@@ -61,18 +61,18 @@ filter_tiles_to_coords(Tiles, Turn, Coords) :-
 
 % Check if the board is won by the player currently in turn
 check_win(Data, New_data) :-
-    % Check floadfill
     get_tiles(Data, Tiles),
     get_turn(Data, Turn),
     get_size(Data, X, Y),
     exclude(is_color(Turn), Tiles, New_Tiles),
-    maplist(get_coord_from_tile, New_Tiles, [C|Coords]),
+    maplist(get_coord_from_tile, New_Tiles, Coords),
     state_direction(Data, Turn, Dir),
     % Because the turn already switched
     Direction is Dir * -1,
     get_extra_border_coords(X/Y, Direction, New_border_coords),
     append(Coords, New_border_coords, Coords_to_check),
-    floodfill([C], Coords_to_check),
+    Minus_one is -1,
+    floodfill([Minus_one/Minus_one], Coords_to_check, X/Y),
     win_value(Mul), !,
     New_state is Direction * Mul,
     set_state(Data, New_state, New_data).
@@ -83,12 +83,13 @@ check_win(Data, Data).
 
 % This is the classic floodfill algorithm
 %   That means, you take a coordinate and 'fill' all of it's neighbours and do the same recursively for the neighbours
-floodfill(_, []).
-floodfill([Todo|Todos], Coords) :-
+floodfill(Todos, _, Destination) :- member(Destination, Todos).
+floodfill([Todo|Todos], Coords, Destination) :-
     get_neigh_coords(Todo, Coords, Neighs),
     remove_elements(Coords, Neighs, New_coords),
+    % write("Destination:"), write(Destination), write(" | Todos:"), write([Todo|Todos]), write(" | Coords:"), write(Coords), write(" | Neighs:"), write(Neighs), write("\n"),
     append(Todos, Neighs, New_todos),
-    floodfill(New_todos, New_coords).
+    floodfill(New_todos, New_coords, Destination).
 
 get_tile_coord_utility(Turn/_, Turn, Tile, Value) :-
     get_tile_coord(Tile, Value, _).
@@ -117,13 +118,13 @@ get_utility(Data, New_data) :-
     set_state(Data, Value, New_data).
 
 % Generate the new states from a list of options and the current state
-generate_states(_, _, [], _, [], _).
-generate_states(Data, Turn, [X/Y|Options], Coords, [State|States], Direction) :-
+generate_states(_, _, [], [], _).
+generate_states(Data, Turn, [X/Y|Options], [State|States], Direction) :-
     % Add a new tile which is the new option
     new_tile(Tile, X, Y, Turn),
     add_tile(Data, Tile, State),
     % Generate the states for the remaining options
-    generate_states(Data, Turn, Options, Coords, States, Direction).
+    generate_states(Data, Turn, Options, States, Direction).
 
 
 % Get all possible next states
@@ -148,11 +149,7 @@ get_all_boards(Data, States) :-
     % Flip the turn of the Data, this is to ensure that the newly generated Boards have the right state
     get_newTurn(Data, Turn, New_turn),
     set_turn(Data, New_turn, New_data),
-    % Make a list of all coords to check in floodfill
-    filter_tiles_to_coords(Tiles, Turn, Colored_tiles),
-    append(New_border_coords, Colored_tiles, FF_coords),
-    % Generate all states from the list of options
-    generate_states(New_data, Turn, Options, FF_coords, States, Direction).
+    generate_states(New_data, Turn, Options, States, Direction).
 
 
 % Check if the list of states contains a winning state and ifso return that state.
@@ -170,11 +167,11 @@ is_win_state(State) :-
 :- dynamic alpha/1.
 :- dynamic beta/1.
 
-% The following code is based on the code from the course
+% The following code is based on the code from the course "Logisch programmeren" week 7
 get_all_successors(Data, States) :- get_all_boards(Data, States), States \= [].
-min_to_move(Data) :- get_turn(Data, Turn), get_orientation(Data, _, Turn).
-max_to_move(Data) :- get_turn(Data, Turn), get_orientation(Data, Turn, _).
-utility(Data, Value) :- get_utility(Data, New_data), get_state(New_data, Value).
+max_to_move(Data) :- get_turn(Data, Turn), get_orientation(Data, _, Turn).
+min_to_move(Data) :- get_turn(Data, Turn), get_orientation(Data, Turn, _).
+utility(Data, Value) :- get_utility(Data, New_data), get_state(New_data, Value).%, write("Util value is: "), write(Value), write(" For board: \n"), write(New_data), write("\n").
 
 % At max depth we take the utility of the state
 minimax(Pos, _, Val, 0) :-
@@ -182,17 +179,19 @@ minimax(Pos, _, Val, 0) :-
     utility(Pos, Val), !.
 % If β is below α, cut here and return the Position and its value
 minimax(Pos, Pos, Val, _) :-
-    alpha(Alpha), beta(Beta), Beta =< Alpha, !, utility(Pos, Val).
+    alpha(Alpha), beta(Beta), Beta =< Alpha, get_utility(Pos, Val).%, write("Alpha is: "), write(Alpha), write(" Beta is: "), write(Beta), write("\n").
 % Otherwise take the best of all successors
 minimax(Pos, BestNextPos, Val, Depth) :-
     get_all_successors(Pos, NextPosList),
     Depth_minus_one is Depth - 1,
+    % write("Next positions are: "), write(NextPosList), write("\n"),
     best(NextPosList, BestNextPos, Val, Depth_minus_one), !.
 % If the state has no successors, take the utility
 minimax(Pos, _, Val, _) :-
     update_alpha_beta(Pos),
     utility(Pos, Val).
 
+% update_alpha_beta(_) :- !.
 update_alpha_beta(Pos) :-
     min_to_move(Pos),   beta(Beta), utility(Pos, Val),
      retract(beta(Beta)),  assert(beta(Val)), !.
@@ -202,7 +201,6 @@ update_alpha_beta(Pos) :-
 update_alpha_beta(_).
 
 best([Pos], Pos, Val, Depth) :-
-    update_alpha_beta(Pos),
     minimax(Pos, _, Val, Depth), !.
 best([Pos1 | PosList], BestPos, BestVal, Depth) :-
     minimax(Pos1, _, Val1, Depth),
@@ -218,29 +216,30 @@ betterOf(Pos0, Val0, _, Val1, Pos0, Val0) :-   % Pos0 better than Pos1
 betterOf(_, _, Pos1, Val1, Pos1, Val1).        % Otherwise Pos1 better than Pos0
 
 
-% If a win is possible in one step, do it
 get_best_board(Data, Best_state) :-
     get_all_boards(Data, States),
     maplist(check_win, States, New_States),
-    has_win_state(New_States, Best_state).
+    has_win_state(New_States, Best_state), !.
 
-% Else temporarily just return a state
-get_best_board(Data, Best_state) :-
+get_best_board(Data, Return_state) :-
     % Set the values for α and β to -1000 and 1000 (as a decent lower and upper bound to start)
     retractall(alpha(_)), retractall(beta(_)),
     assert(alpha(-1000)), assert(beta(1000)),
     debug_print_alpha_beta,
     % Do a minimax with max depth 4
-    minimax(Data, Best_state, _, 4),
+    minimax(Data, Best_state, Val, 4),
+    check_win(Best_state, Return_state),
+    debug_print_final_value(Val),
     debug_print_alpha_beta.
 
-print_if_equal(Data, Data) :-
-    write("THEY ARE FUCKING EQUAL\n").
-print_if_equal(_, _).
-
 % Define debugging level
-% debug(0).
-debug(1).
+debug(0) :- !.
+debug(1) :- !.
+debug_print_final_value(Val):-
+    debug(Debug), Debug > 0,
+    write("The final value of the game is: "), write(Val), write("\n").
+debug_print_final_value(_):-
+    debug(0).
 debug_print_alpha_beta:-
     debug(Debug), Debug > 0,
     alpha(Alpha), beta(Beta),
