@@ -10,8 +10,9 @@ parse(Retval) :-
 parse(_) :-
     exit_with_code_and_message(4, "Failed to parse.").
 
-% When all is parsed, stop and parse the end of input
-gram(_, 1, 1, 1, 1, 1) --> !, eos.
+% When all is parsed, stop and parse the end of input with an optional extra newline
+gram(_, 1, 1, 1, 1, 1) --> whites, eos.
+gram(_, 1, 1, 1, 1, 1) --> whites, !, "\n", eos.
 
 % Parse size and indicate that it is parsed
 gram([Size, Turn, Ori, State, Tiles], 0, B2, B3, B4, B5) -->
