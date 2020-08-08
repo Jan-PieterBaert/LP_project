@@ -114,7 +114,7 @@ get_utility(Data, New_data) :-
     length(Sorted_Values_Y, Length_Y),
 
     % The utility is: the number of rows the first player has covered - the number of columns the second player has covered
-    Value is Length_X - Length_Y,
+    Value is Length_Y - Length_X,
     set_state(Data, Value, New_data).
 
 % Generate the new states from a list of options and the current state
@@ -176,20 +176,27 @@ utility(Data, Value) :- get_utility(Data, New_data), get_state(New_data, Value).
 % At max depth we take the utility of the state
 minimax(Pos, _, Val, 0) :-
     update_alpha_beta(Pos),
-    utility(Pos, Val), !.
+    utility(Pos, Val),
+    % write("Minimax_0:\n"), write(Pos), write("\nValue: "), write(Val), write("\n\n"),
+    !.
 % If β is below α, cut here and return the Position and its value
-minimax(Pos, Pos, Val, _) :-
-    alpha(Alpha), beta(Beta), Beta =< Alpha, get_utility(Pos, Val).%, write("Alpha is: "), write(Alpha), write(" Beta is: "), write(Beta), write("\n").
+minimax(Pos, _, Val, _) :-
+    alpha(Alpha), beta(Beta), Beta =< Alpha, utility(Pos, Val),%, write("Alpha is: "), write(Alpha), write(" Beta is: "), write(Beta), write("\n").
+    % write("Minimax_1:\n"), write(Pos), write("\nValue: "), write(Val), write("\n\n"),
+    !.
 % Otherwise take the best of all successors
 minimax(Pos, BestNextPos, Val, Depth) :-
     get_all_successors(Pos, NextPosList),
     Depth_minus_one is Depth - 1,
     % write("Next positions are: "), write(NextPosList), write("\n"),
-    best(NextPosList, BestNextPos, Val, Depth_minus_one), !.
+    best(NextPosList, BestNextPos, Val, Depth_minus_one),
+    % write("Minimax_2:\n"), write(Pos), write("\nValue: "), write(Val), write("\n\n").
+    !.
 % If the state has no successors, take the utility
 minimax(Pos, _, Val, _) :-
     update_alpha_beta(Pos),
     utility(Pos, Val).
+    % write("Minimax_3:\n"), write(Pos), write("\nValue: "), write(Val), write("\n\n").
 
 % update_alpha_beta(_) :- !.
 update_alpha_beta(Pos) :-
@@ -201,10 +208,13 @@ update_alpha_beta(Pos) :-
 update_alpha_beta(_).
 
 best([Pos], Pos, Val, Depth) :-
-    minimax(Pos, _, Val, Depth), !.
+    minimax(Pos, _, Val, Depth),
+    % write("Pos is:"), write(Pos), write("\n"), write(Val), write("\n\n"),
+    !.
 best([Pos1 | PosList], BestPos, BestVal, Depth) :-
     minimax(Pos1, _, Val1, Depth),
     best(PosList, Pos2, Val2, Depth),
+    % write("Better of: "), write(Depth), write("\n"), write([Pos1, Val1]), write("\n"), write([Pos2, Val2]), write("\n\n"),
     betterOf(Pos1, Val1, Pos2, Val2, BestPos, BestVal).
 
 betterOf(Pos0, Val0, _, Val1, Pos0, Val0) :-   % Pos0 better than Pos1
@@ -227,7 +237,7 @@ get_best_board(Data, Return_state) :-
     assert(alpha(-1000)), assert(beta(1000)),
     debug_print_alpha_beta,
     % Do a minimax with max depth 4
-    minimax(Data, Best_state, Val, 4),
+    minimax(Data, Best_state, Val, -1),
     check_win(Best_state, Return_state),
     debug_print_final_value(Val),
     debug_print_alpha_beta.
