@@ -103,14 +103,22 @@ get_utility(Data, New_data) :-
     get_tiles(Data, Tiles),
     get_orientation(Data, X, Y),
 
+    % Get all tiles which are from player 1
     include(is_color(X), Tiles, Tiles_X),
+    % Take all the row coordinate parts
     maplist(get_tile_coord_utility(X/Y, Y), Tiles_X, Values_X),
+    % Sort, to get a set of it
     sort(Values_X, Sorted_Values_X),
+    % Take the length of that set
     length(Sorted_Values_X, Length_X),
 
+    % Get all tiles which are from player 2
     include(is_color(Y), Tiles, Tiles_Y),
+    % Take all the column coordinate parts
     maplist(get_tile_coord_utility(X/Y, X), Tiles_Y, Values_Y),
+    % Sort, to get a set of it
     sort(Values_Y, Sorted_Values_Y),
+    % Take the length of that set
     length(Sorted_Values_Y, Length_Y),
 
     % The utility is: the number of rows the first player has covered - the number of columns the second player has covered
