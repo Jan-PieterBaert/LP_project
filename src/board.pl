@@ -5,9 +5,15 @@
         get_all_free_coords/3,
         get_utility/2,
 
+        get_all_successors/2,
+        max_to_move/1,
+        min_to_move/1,
+        utility/2,
+
         % Below functions is to be able to use it in the printing of svg's
         get_all_coords_in_bound/2
     ]).
+
 % Get the extra coords for the fields outside the border, where the color starts
 %   This means the top and bottom for the first player
 %   Or left and right for the second player
@@ -56,18 +62,24 @@ filter_tiles_to_coords(Tiles, Turn, Coords) :-
 
 % Check if the board is won by the player currently in turn
 check_win(Data, New_data) :-
+    % Take the tiles, turn and size from the data
     get_tiles(Data, Tiles),
     get_turn(Data, Turn),
     get_size(Data, X, Y),
+    % Filter based on color, since the turn already switched we exclude the tiles with the same color as the turn
     exclude(is_color(Turn), Tiles, New_Tiles),
+    % Take the coordinates of the filtered tiles
     maplist(get_coord_from_tile, New_Tiles, Coords),
     state_direction(Data, Turn, Dir),
     % Because the turn already switched
     Direction is Dir * -1,
+    % Take the coordinates that are the borders (left-right or top-bottom)
     get_extra_border_coords(X/Y, Direction, New_border_coords),
+    % Make a list of coordinates we need to check
     append(Coords, New_border_coords, Coords_to_check),
-    Minus_one is -1,
-    floodfill([Minus_one/Minus_one], Coords_to_check, X/Y),
+    % Apply floodfill to find a path from -1/-1 to X/Y
+    Minus_one is -1, floodfill([Minus_one/Minus_one], Coords_to_check, X/Y),
+    % Update the value of the data and make a new one
     win_value(Mul), !,
     New_state is Direction * Mul,
     set_state(Data, New_state, New_data).
@@ -80,21 +92,30 @@ check_win(Data, Data).
 %   That means, you take a coordinate and 'fill' all of it's neighbours and do the same recursively for the neighbours
 floodfill(Todos, _, Destination) :- member(Destination, Todos).
 floodfill([Todo|Todos], Coords, Destination) :-
+    % Take all coordinates of all neighbors of the Todo coordinate
     get_neigh_coords(Todo, Coords, Neighs),
+    % Remove the neighbors from the coordinates
     remove_elements(Coords, Neighs, New_coords),
+    % Debug statement
     % write("Destination:"), write(Destination), write(" | Todos:"), write([Todo|Todos]), write(" | Coords:"), write(Coords), write(" | Neighs:"), write(Neighs), write("\n"),
+    % Update the Todos
     append(Todos, Neighs, New_todos),
+    % Call floodfill with the new coordinates and new todos
     floodfill(New_todos, New_coords, Destination).
 
+% Helper function to get the X or Y value of the coordinate used in the utility
 get_tile_coord_utility(Turn/_, Turn, Tile, Value) :-
     get_tile_coord(Tile, Value, _).
 get_tile_coord_utility(_/Turn, Turn, Tile, Value) :-
     get_tile_coord(Tile, _, Value).
 
+% Check if a tile is a certain color
 is_color(Color, Tile) :-
     get_tile_color(Tile, Color).
 
+% Calculate the utility value for the data
 get_utility(Data, New_data) :-
+    % Take the tiles and coordinate from the data
     get_tiles(Data, Tiles),
     get_orientation(Data, X, Y),
 
@@ -118,6 +139,7 @@ get_utility(Data, New_data) :-
 
     % The utility is: the number of rows the first player has covered - the number of columns the second player has covered
     Value is Length_Y - Length_X,
+    % Update the data value to a new value to give a new data
     set_state(Data, Value, New_data).
 
 % Generate the new states from a list of options and the current state
@@ -153,4 +175,11 @@ get_all_boards(Data, States) :-
     get_newTurn(Data, Turn, New_turn),
     set_turn(Data, New_turn, New_data),
     generate_states(New_data, Turn, Options, States, Direction).
+
+
+% Implement the solve interface
+get_all_successors(Data, States) :- get_all_boards(Data, States), States \= [].
+max_to_move(Data) :- get_turn(Data, Turn), get_orientation(Data, _, Turn).
+min_to_move(Data) :- get_turn(Data, Turn), get_orientation(Data, Turn, _).
+utility(Data, Value) :- get_utility(Data, New_data), get_state(New_data, Value).
 
