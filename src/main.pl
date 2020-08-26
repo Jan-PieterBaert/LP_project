@@ -1,4 +1,5 @@
 :- use_module(library(statistics)).
+:- use_module(board).
 :- use_module(datastructures/ctt).
 :- use_module(datastructures/tile).
 :- use_module(misc/list_operations).
